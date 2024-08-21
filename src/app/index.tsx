@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient'; // Importa o LinearGradient
+import { Link } from 'expo-router';
 
 export default function App() {
   const [name, setName] = useState('');
@@ -24,16 +26,19 @@ export default function App() {
   };
 
   const handleLogin = () => {
-    alert('Ir para tela de login');
+    // alert('Ir para tela de login');
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <LinearGradient
+      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']} // Cores do gradiente
+      style={styles.container} // Aplica o gradiente ao container
+    >
       <StatusBar style="auto" />
       <View style={styles.imageContainer}>
-        <Image 
+        <Image
           source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
-          style={styles.profileImage} 
+          style={styles.profileImage}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -71,35 +76,35 @@ export default function App() {
         />
         <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.passwordInput}  
+            style={styles.passwordInput}
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
             placeholder="Senha"
-            placeholderTextColor="#FFF"  
+            placeholderTextColor="#FFF"
           />
           <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-            <Ionicons 
-              name={showPassword ? 'eye-off' : 'eye'} 
-              size={24} 
-              color="#01355C" 
+            <Ionicons
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={24}
+              color="#fff"
             />
           </Pressable>
         </View>
         <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.passwordInput}  
+            style={styles.passwordInput}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             secureTextEntry={!showConfirmPassword}
             placeholder="Confirme a Senha"
-            placeholderTextColor="#FFF"  
+            placeholderTextColor="#FFF"
           />
           <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
-            <Ionicons 
-              name={showConfirmPassword ? 'eye-off' : 'eye'} 
-              size={24} 
-              color="#01355C" 
+            <Ionicons
+              name={showConfirmPassword ? 'eye-off' : 'eye'}
+              size={24}
+              color="#fff"
             />
           </Pressable>
         </View>
@@ -112,11 +117,13 @@ export default function App() {
         )}
       </TouchableOpacity>
       <View style={styles.footerContainer}>
-        <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
-          <Text style={styles.footerButtonText}>Já tem uma conta? Faça login</Text>
-        </TouchableOpacity>
+        <Link href="/login" asChild>
+          <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
+            <Text style={styles.footerButtonText}>Já tem uma conta? Faça login</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
-    </ScrollView>
+    </LinearGradient>
   );
 }
 
@@ -125,16 +132,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#01355C',
   },
   imageContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
   profileImage: {
-    width: 100,  
-    height: 100, 
-    borderRadius: 50, 
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
   inputContainer: {
     marginBottom: 20,
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   passwordInput: {
-    color: '#FFF',  
+    color: '#FFF',
     flex: 1,
     height: 40,
     borderColor: '#000',
