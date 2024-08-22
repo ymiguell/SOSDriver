@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient'; // Importa o LinearGradient
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -11,11 +12,12 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = () => {
-        // setLoading(true);
-        // setTimeout(() => {
-        //     setLoading(false);
-        //     alert('Logado com sucesso');
-        // }, 2000);
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            router.push('/map')
+        }, 2000);
+
     };
 
     const handleCreateAccount = () => {
@@ -27,66 +29,89 @@ const Login = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <LinearGradient
+            colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']} // Cores do gradiente
+            style={styles.container} // Aplica o gradiente ao container
+        >
             <StatusBar style="auto" />
-            <View style={styles.imageContainer}>
-                <Image
-                    source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
-                    style={styles.profileImage}
-                />
-            </View>
-            <Text style={styles.title}>Iniciar Sessão</Text>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                <View style={styles.passwordContainer}>
-                    <TextInput
-                        style={styles.passwordInput}
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={!showPassword}
-                        autoCapitalize="none"
-                    />
-                    <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                        <Ionicons
-                            name={showPassword ? 'eye-off' : 'eye'}
-                            size={24}
-                            color="#01355C"
-                        />
-                    </Pressable>
+            <View style={styles.mainContainer}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <View style={styles.innerContainer}>
+                        <View style={styles.imageContainer}>
+                            <Image
+                                source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
+                                style={styles.profileImage}
+                            />
+                        </View>
+                        <Text style={styles.title}>Iniciar Sessão</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                value={username}
+                                onChangeText={setUsername}
+                                placeholder="Usuário"
+                                autoCapitalize="none"
+                            />
+                            <View style={styles.passwordContainer}>
+                                <TextInput
+                                    style={styles.passwordInput}
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    secureTextEntry={!showPassword}
+                                    placeholder="Senha"
+                                    autoCapitalize="none"
+                                />
+                                <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                                    <Ionicons
+                                        name={showPassword ? 'eye-off' : 'eye'}
+                                        size={24}
+                                        color="#01355C"
+                                    />
+                                </Pressable>
+                            </View>
+                        </View>
+                        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotPasswordButton}>
+                            <Text style={styles.forgotPasswordText}>Esqueceu a Senha?</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+                            {loading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Iniciar Sessão</Text>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+                <View style={styles.footerContainer}>
+                    <Link href="/" asChild>
+                        <TouchableOpacity style={styles.footerButton} onPress={handleCreateAccount}>
+                            <Text style={styles.footerButtonText}>Ainda não possui uma conta? Cadastre-se</Text>
+                        </TouchableOpacity>
+                    </Link>
                 </View>
             </View>
-            <TouchableOpacity onPress={handleForgotPassword} style={styles.footerButton}>
-                <Text style={styles.footerButtonText}>Esqueceu a Senha?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-                {loading ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text style={styles.buttonText}>Iniciar Sessão</Text>
-                )}
-            </TouchableOpacity>
-            <Link href="/" asChild>
-                <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
-                    <Text style={styles.footerButtonText}>Ainda não possui uma conta? Cadastre-se</Text>
-                </TouchableOpacity>
-            </Link>
-        </ScrollView>
+        </LinearGradient>
     );
-}
+};
 
 export default Login;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+    },
+    mainContainer: {
+        flex: 1,
+        justifyContent: 'space-between', // Ensure space between top and bottom components
+    },
+    innerContainer: {
+        flex: 1,
+        justifyContent: 'center', // Center content vertically
         padding: 16,
-        backgroundColor: '#01355C',
+    },
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'center', // Center content inside scroll view
     },
     imageContainer: {
         alignItems: 'center',
@@ -102,7 +127,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
-        color: '#ffff',
+        color: '#fff',
     },
     inputContainer: {
         marginBottom: 20,
@@ -145,20 +170,26 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
+        padding: 10,
+    },
+    forgotPasswordButton: {
+        alignSelf: 'flex-end',
+        marginBottom: 20,
+    },
+    forgotPasswordText: {
+        color: '#CACACA',
+        fontSize: 16,
+        textDecorationLine: 'underline',
     },
     footerContainer: {
-        marginTop: 20,
-        alignItems: 'center',
+        padding: 16,
     },
     footerButton: {
-        marginBottom: 20,
         alignItems: 'center',
-
     },
     footerButtonText: {
         color: '#CACACA',
         fontSize: 16,
         textDecorationLine: 'underline',
-
     },
 });
