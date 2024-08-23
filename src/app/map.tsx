@@ -1,11 +1,12 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import MapView, { Marker, Polyline, Region } from 'react-native-maps';
 import axios from 'axios';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
+import { Ionicons } from '@expo/vector-icons'; // Importar ícones
 
 // Definindo o tipo para coordenadas
 interface Coordinate {
@@ -18,10 +19,10 @@ const ROUTE_API_URL = 'https://route-api.arcgis.com/arcgis/rest/services/World/R
 
 const App: React.FC = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
-
-  const [routeCoordinates, setRouteCoordinates] = React.useState<Coordinate[]>([]);
-  const [origin, setOrigin] = React.useState<Coordinate>({ latitude: 37.7749, longitude: -122.4194 }); // Exemplo: São Francisco
-  const [destination, setDestination] = React.useState<Coordinate>({ latitude: 34.0522, longitude: -118.2437 }); // Exemplo: Los Angeles
+  const [routeCoordinates, setRouteCoordinates] = useState<Coordinate[]>([]);
+  const [origin, setOrigin] = useState<Coordinate>({ latitude: 37.7749, longitude: -122.4194 }); // Exemplo: São Francisco
+  const [destination, setDestination] = useState<Coordinate>({ latitude: 34.0522, longitude: -118.2437 }); // Exemplo: Los Angeles
+  const [asideVisible, setAsideVisible] = useState<boolean>(false);
 
   useEffect(() => {
     // Abrir o Bottom Sheet automaticamente ao iniciar
@@ -66,10 +67,40 @@ const App: React.FC = () => {
     longitudeDelta: 10,
   };
 
+  const toggleAside = () => {
+    setAsideVisible(!asideVisible);
+  };
+
   return (
     <GestureHandlerRootView style={styles.container}>
-      <StatusBar style="auto" />
-      <View style={styles.container}>
+      <StatusBar style="light" />
+      <View style={styles.mainContainer}>
+        <TouchableOpacity style={styles.menuButton} onPress={toggleAside}>
+          <Ionicons name="menu" size={30} color="#fff" />
+        </TouchableOpacity>
+        {asideVisible && (
+          <View style={styles.aside}>
+            <TouchableOpacity style={styles.closeButton} onPress={toggleAside}>
+              <Ionicons name="close" size={30} color="#fff" />
+            </TouchableOpacity>
+            <LinearGradient
+              colors={['#003B6F', '#005AA6', '#007BFF', '#005AA6', '#003B6F']}
+              style={styles.gradientBackground}
+            >
+              <View style={styles.asideContent}>
+                <TouchableOpacity style={styles.option} onPress={() => Alert.alert('Escolha', 'Perfil')}>
+                  <Text style={styles.optionText}>Perfil</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.option} onPress={() => Alert.alert('Escolha', 'Histórico')}>
+                  <Text style={styles.optionText}>Histórico</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.option} onPress={() => Alert.alert('Escolha', 'Configurações')}>
+                  <Text style={styles.optionText}>Configurações</Text>
+                </TouchableOpacity>
+              </View>
+            </LinearGradient>
+          </View>
+        )}
         <MapView
           style={styles.map}
           initialRegion={centerRegion}
@@ -79,8 +110,8 @@ const App: React.FC = () => {
           {routeCoordinates.length > 0 && (
             <Polyline
               coordinates={routeCoordinates}
-              strokeColor="#FF0000"
-              strokeWidth={3}
+              strokeColor="#FF6347" // Tomate
+              strokeWidth={4}
             />
           )}
         </MapView>
@@ -91,7 +122,7 @@ const App: React.FC = () => {
           style={styles.bottomSheet}
         >
           <LinearGradient
-            colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']}
+            colors={['#003B6F', '#005AA6', '#007BFF', '#005AA6', '#003B6F']}
             style={styles.gradientBackground}
           >
             <View style={styles.bottomSheetContent}>
@@ -112,15 +143,67 @@ const App: React.FC = () => {
   );
 };
 
+const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  mainContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 40,
+    left: 16,
+    zIndex: 2,
+    backgroundColor: '#005AA6',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 3,
+  },
+  aside: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '70%',
+    height: height,
+    zIndex: 3,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: -2, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 4,
+    backgroundColor: '#005AA6',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 3,
+  },
+  gradientBackground: {
+    flex: 1,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    padding: 16,
+  },
+  asideContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   map: {
     flex: 1,
   },
   bottomSheet: {
-    backgroundColor: 'transparent', // Manter transparente para permitir o gradiente
+    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -129,25 +212,19 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  gradientBackground: {
-    flex: 1,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 16,
-  },
   bottomSheetContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   option: {
-    backgroundColor: 'transparent', // Fundo transparente
+    backgroundColor: '#005AA6',
     padding: 15,
-    width: '100%',
+    width: '80%',
     borderRadius: 10,
     marginVertical: 5,
     borderWidth: 1,
-    borderColor: '#000', // Borda preta
+    borderColor: '#003B6F',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -157,7 +234,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 18,
-    color: '#fff', // Texto branco
+    color: '#fff',
   },
 });
 

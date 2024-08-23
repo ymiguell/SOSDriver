@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     innerContainer: {
         flex: 1,
         justifyContent: 'center', // Center content vertically
-        padding: 16,
+        padding: 20,
     },
     scrollContainer: {
         flexGrow: 1,
