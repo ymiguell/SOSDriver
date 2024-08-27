@@ -1,201 +1,119 @@
-import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient'; // Importa o LinearGradient
-import { Link } from 'expo-router';
+import React from "react";
+import { View, Text, TextInput, Image } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet } from "react-native";
 
-export default function App() {
-  const [name, setName] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleRegister = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert('Cadastro realizado com sucesso');
-    }, 2000);
-  };
-
-  const handleLogin = () => {
-    // alert('Ir para tela de login');
-  };
-
+export default function PerfilUser() {
   return (
     <LinearGradient
-      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']} // Cores do gradiente
-      style={styles.container} // Aplica o gradiente ao container
+      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']}
+      style={styles.gradientBackground}
     >
-      <StatusBar style="auto" />
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
-          style={styles.profileImage}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Nome"
-        />
-        <TextInput
-          style={styles.input}
-          value={birthdate}
-          onChangeText={setBirthdate}
-          placeholder="Data de Nascimento (dd/mm/aaaa)"
-        />
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="E-mail"
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-          placeholder="Usuário"
-        />
-        <TextInput
-          style={styles.input}
-          value={cpf}
-          onChangeText={setCpf}
-          placeholder="CPF"
-          keyboardType="numeric"
-        />
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-            placeholder="Senha"
-            placeholderTextColor="#FFF"
+      <View style={styles.container}>
+        <View style={styles.containerUser}>
+          <Image
+            source={{ uri: 'https://via.placeholder.com/100' }} 
+            style={styles.profileImage}
           />
-          <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-            <Ionicons
-              name={showPassword ? 'eye-off' : 'eye'}
-              size={24}
-              color="#fff"
-            />
-          </Pressable>
+          <View style={styles.containerStar}>
+            <Text style={styles.titleStyle}>
+              Miguel Melo
+            </Text>
+            <View style={styles.starsContainer}>
+              <Text style={styles.formatStars}>★</Text>
+              <Text style={styles.formatStars}>★</Text>
+              <Text style={styles.formatStars}>★</Text>
+              <Text style={styles.formatStars}>★</Text>
+              <Text style={styles.formatStars}>★</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry={!showConfirmPassword}
-            placeholder="Confirme a Senha"
-            placeholderTextColor="#FFF"
-          />
-          <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
-            <Ionicons
-              name={showConfirmPassword ? 'eye-off' : 'eye'}
-              size={24}
-              color="#fff"
-            />
-          </Pressable>
+
+        <View style={styles.containerInfo}>
+          <View style={styles.separateInputs}>
+            <Text style={styles.label}>Alterar Telefone:</Text>
+            <TextInput placeholder="999" placeholderTextColor="#ccc" style={styles.inputText} />
+          </View>
+
+          <View style={styles.separateInputs}>
+            <Text style={styles.label}>Alterar email:</Text>
+            <TextInput placeholder="seuemail@exemplo.com" placeholderTextColor="#ccc" style={styles.inputText} />
+          </View>
+
+          <View style={styles.separateInputs}>
+            <Text style={styles.label}>Alterar senha:</Text>
+            <TextInput placeholder="********" placeholderTextColor="#ccc" secureTextEntry={true} style={styles.inputText} />
+          </View>
         </View>
-      </View>
-      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        )}
-      </TouchableOpacity>
-      <View style={styles.footerContainer}>
-        <Link href="/login" asChild>
-          <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
-            <Text style={styles.footerButtonText}>Já tem uma conta? Faça login</Text>
-          </TouchableOpacity>
-        </Link>
       </View>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradientBackground: {
     flex: 1,
     justifyContent: 'center',
-    padding: 16,
-  },
-  imageContainer: {
     alignItems: 'center',
+  },
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleStyle: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  containerInfo: {
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 20,
+    width: '80%',
+    elevation: 5,
+  },
+  label: {
+    color: "#000",
+    fontWeight: 'bold',
+    marginBottom: 5,
+    padding: 14,
+  },
+  inputText: {
+    padding: 10,
+    color: "#000",
+    borderRadius: 5,
     marginBottom: 20,
+  },
+  separateInputs: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+  },
+  containerUser: {
+    flexDirection: 'row',
+    padding: 20,
+    width: '80%'
+  },
+  containerStar: {
+    flexDirection: 'column',
+    marginTop: 1,
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center'
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
+    marginRight: 20,
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 15,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    backgroundColor: 'white',
-  },
-  passwordContainer: {
+  starsContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingBottom: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
-  passwordInput: {
-    color: '#FFF',
-    flex: 1,
-    height: 40,
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 15,
-    paddingHorizontal: 10,
-  },
-  eyeIcon: {
-    position: 'absolute',
-    right: 10,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    backgroundColor: '#FF0000',
-    borderRadius: 15,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    padding: 10,
-  },
-  footerContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  footerButton: {
-    alignItems: 'center',
-  },
-  footerButtonText: {
-    color: '#CACACA',
-    fontSize: 16,
-    textDecorationLine: 'underline',
-  },
+  formatStars: {
+    color: '#FFFF00',
+    fontSize: 24,
+    marginHorizontal: 2,
+  }
 });
