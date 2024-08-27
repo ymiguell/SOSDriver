@@ -4,58 +4,64 @@ import { StyleSheet } from "react-native";
 
 export default function perfilUser() {
   return (
-    <View style={styles.container} >
-      <Text style={styles.titleStyle} >
+    <View style={styles.container}>
+      <Text style={styles.titleStyle}>
         Miguel Melo
       </Text>
 
       <View style={styles.containerInfo}>
         <View style={styles.separateInputs}>
-          <TextInput style={styles.inputText}>
-            Alterar Telefone:
-
-          </TextInput>
+          <Text style={styles.label}>Alterar Telefone:</Text>
+          <TextInput placeholder="999" placeholderTextColor="#ccc" style={styles.inputText} />
         </View>
-        <TextInput style={styles.inputText}>
-          Alterar email:
-        </TextInput>
-        <TextInput style={styles.inputText}>
-          Alterar senha:
-        </TextInput>
-      </View>
 
-    </View >
-  )
+        <View style={styles.separateInputs}>
+          <Text style={styles.label}>Alterar email:</Text>
+          <TextInput placeholder="seuemail@exemplo.com" placeholderTextColor="#ccc" style={styles.inputText} />
+        </View>
+
+        <View style={styles.separateInputs}>
+          <Text style={styles.label}>Alterar senha:</Text>
+          <TextInput placeholder="********" placeholderTextColor="#ccc" secureTextEntry={true} style={styles.inputText} />
+        </View>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   titleStyle: {
     fontSize: 30,
-    color: '#fffs',
+    color: '#000',
     fontWeight: 'bold',
-
+    marginBottom: 20,
   },
-
   containerInfo: {
-    backgroundColor: "#000",
+    backgroundColor: "#051094",
     borderRadius: 20,
+    padding: 20,
+    width: '80%',
+    elevation: 5,
+},
+  label: {
+    color: "#fff",
+    fontWeight: 'bold',
+    marginBottom: 5,
+    padding: 14,
   },
   inputText: {
     padding: 10,
-    color: "#FFFF",
-    fontWeight: 'bold',
-    marginBottom: 10,
+    color: "#fff",
+    borderRadius: 5,
+    marginBottom: 20,
+    
   },
   separateInputs: {
-    borderWidth: 1,
-    borderBottomColor: '#fff',
-    borderTopWidth: 0,
-    borderLeftWidth: 0,
-    borderRightWidth: 0
-  } 
+    flexDirection: 'row',
+  },
 });
