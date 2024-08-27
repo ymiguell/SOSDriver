@@ -25,7 +25,11 @@ const Login = () => {
     };
 
     const handleForgotPassword = () => {
-        alert('Esqueceu a senha');
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false)
+            router.push('/forgotMyPassword')
+        })
     };
 
     return (
