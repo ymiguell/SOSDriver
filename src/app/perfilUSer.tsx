@@ -1,7 +1,10 @@
 import React from "react";
-import { View, Text, TextInput, Image } from "react-native";
+import { View, Text, TextInput, Image, TouchableOpacity } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet } from "react-native";
+import { router } from "expo-router";
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 export default function PerfilUser() {
   return (
@@ -10,6 +13,12 @@ export default function PerfilUser() {
       style={styles.gradientBackground}
     >
       <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.push('/map')} // Navega para a tela de login
+      >
+        <Icon name="arrow-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
         <View style={styles.containerUser}>
           <Image
             source={{ uri: 'https://via.placeholder.com/100' }} 
@@ -115,5 +124,9 @@ const styles = StyleSheet.create({
     color: '#FFFF00',
     fontSize: 24,
     marginHorizontal: 2,
-  }
+  },
+  backButton: {
+    marginBottom: 20,
+    alignSelf: 'flex-start',
+  },
 });
