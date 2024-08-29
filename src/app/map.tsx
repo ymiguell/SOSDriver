@@ -3,12 +3,18 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
 import { Ionicons } from '@expo/vector-icons'; // Importar ícones
 import MapView, { Marker } from 'react-native-maps';
+import { router, useRouter } from 'expo-router'
 
 const App: React.FC = () => {
   const [asideVisible, setAsideVisible] = useState<boolean>(false);
 
   const toggleAside = () => {
     setAsideVisible(!asideVisible);
+  };
+
+  const PasswordRecoveryScreen = () => {
+    const router = useRouter(); // Obtém a instância do roteador
+
   };
 
   return (
@@ -32,14 +38,14 @@ const App: React.FC = () => {
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => alert('Perfil')}>
+          <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
             <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
-            <Text style={styles.optionText}>Histórico de chamadas</Text>
+            <Text style={styles.optionText}>Histórico</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.option} onPress={() => alert('Convide amigos')}>
@@ -130,7 +136,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 5,
     borderWidth: 1,
-    borderColor: '#003B6F',
+    borderColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

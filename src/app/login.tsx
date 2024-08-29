@@ -43,7 +43,7 @@ const Login = () => {
                     <View style={styles.innerContainer}>
                         <View style={styles.imageContainer}>
                             <Image
-                                source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
+                                source={require('@/Images/logoSOS.png')}
                                 style={styles.profileImage}
                             />
                         </View>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     profileImage: {
-        width: 100,
+        width: 200,
         height: 100,
         borderRadius: 50,
     },
