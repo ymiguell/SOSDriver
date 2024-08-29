@@ -2,33 +2,72 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient'; // Importação adicionada
-import { Link, useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { useNavigation } from '@react-navigation/native';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter();
+    const navigation = useNavigation();
 
-    const handleLogin = () => {
+    // Função para validar as entradas do usuário
+    const validateInputs = () => {
+        if (!username || !password) {
+            alert('Por favor, preencha todos os campos.');
+            return false;
+        }
+        return true;
+    };
+
+    // Função para lidar com o login
+    const handleLogin = async () => {
+        if (!validateInputs()) return;
+    
         setLoading(true);
-        setTimeout(() => {
+    
+        try {
+            const response = await fetch('http://172.16.11.20:3001/api/login', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    senha: password,  // Enviar 'senha' ao invés de 'password'
+                }),
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                // Armazenar o token ou credenciais
+                await AsyncStorage.setItem('authToken', result.token);
+    
+                // Navegar para a próxima página
+                navigation.navigate('Map');
+            } else {
+                alert(result.message || 'Erro ao realizar o login.');
+            }
+        } catch (error) {
+            console.error('Erro ao fazer login:', error);
+            alert('Erro ao realizar o login.');
+        } finally {
             setLoading(false);
-            router.push('/map');
-        }, 2000);
+        }
     };
 
     const handleCreateAccount = () => {
-        alert('Criar conta');
+        navigation.navigate('Register');
     };
 
     const handleForgotPassword = () => {
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-            router.push('/forgotMyPassword');
+            navigation.navigate('ForgotPassword');
         }, 2000);
     };
 
@@ -87,11 +126,9 @@ const Login = () => {
                     </View>
                 </ScrollView>
                 <View style={styles.footerContainer}>
-                    <Link href="/" asChild>
-                        <TouchableOpacity style={styles.footerButton} onPress={handleCreateAccount}>
-                            <Text style={styles.footerButtonText}>Ainda não possui uma conta? Cadastre-se</Text>
-                        </TouchableOpacity>
-                    </Link>
+                    <TouchableOpacity style={styles.footerButton} onPress={handleCreateAccount}>
+                        <Text style={styles.footerButtonText}>Ainda não possui uma conta? Cadastre-se</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </LinearGradient>

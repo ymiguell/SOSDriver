@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // Configuração do banco de dados
 const db = mysql.createConnection({
-  host: '172.16.11.20',
+  host: 'localhost',
   user: 'root',
   password: '',  // Corrigido de 'senha' para 'password'
   database: 'tcc'

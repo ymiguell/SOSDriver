@@ -1,9 +1,11 @@
+// RegisterScreen.js
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
+import { useNavigation } from '@react-navigation/native'; 
 
-export default function App() {
+const RegisterScreen = () => {
   const [nome, setNome] = useState('');
   const [dt_nasc, setDtNasc] = useState('');
   const [email, setEmail] = useState('');
@@ -15,14 +17,14 @@ export default function App() {
   const [showsenha, setShowsenha] = useState(false);
   const [showConfirmsenha, setShowConfirmsenha] = useState(false);
 
+  const navigation = useNavigation();
+
   const handleRegister = async () => {
-    // Verifica se todos os campos foram preenchidos
     if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha) {
       alert('Todos os campos são obrigatórios.');
       return;
     }
 
-    // Verifica se as senhas coincidem
     if (senha !== confirmsenha) {
       alert('As senhas não coincidem.');
       return;
@@ -51,7 +53,6 @@ export default function App() {
 
       if (response.ok) {
         alert('Cadastro realizado com sucesso');
-        // Limpar os campos do formulário após o cadastro bem-sucedido
         setNome('');
         setDtNasc('');
         setEmail('');
@@ -71,7 +72,7 @@ export default function App() {
   };
 
   const handleLogin = () => {
-    alert('Ir para tela de login');
+    navigation.navigate('Login');
   };
 
   return (
@@ -164,7 +165,7 @@ export default function App() {
       </View>
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
     paddingHorizontal: 10,
-    color: "fff"
+    color: "#fff"
   },
   eyeIcon: {
     position: 'absolute',
@@ -245,3 +246,5 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
+
+export default RegisterScreen;
