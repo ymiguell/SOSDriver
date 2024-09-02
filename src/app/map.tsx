@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradien
 import { Ionicons } from '@expo/vector-icons'; // Importar ícones
 import MapView, { Marker } from 'react-native-maps';
 import { router, useRouter } from 'expo-router'
+import { BottomSheet } from '@/components/PopUp'
 
 const App: React.FC = () => {
   const [asideVisible, setAsideVisible] = useState<boolean>(false);
@@ -18,7 +19,10 @@ const App: React.FC = () => {
   };
 
   return (
+
+
     <View style={styles.container}>
+    <BottomSheet></BottomSheet>
       <TouchableOpacity style={styles.menuButton} onPress={toggleAside}>
         <Ionicons name="menu" size={30} color="#fff" />
       </TouchableOpacity>
@@ -152,6 +156,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

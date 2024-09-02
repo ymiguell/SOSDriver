@@ -109,13 +109,19 @@ export default function App() {
           </Pressable>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        )}
-      </TouchableOpacity>
+
+    
+      <Link style={styles.button}  href={'/map'}>
+        {/* <TouchableOpacity onPress={handleRegister} disabled={loading}> */}
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Cadastrar</Text>
+          )}
+        {/* </TouchableOpacity> */}
+      </Link>
+
+
       <View style={styles.footerContainer}>
         <Link href="/login" asChild>
           <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
@@ -176,9 +182,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
+    padding: 10,
+    display: 'flex',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FF0000',
     borderRadius: 15,
-    alignItems: 'center',
     marginBottom: 20,
   },
   buttonText: {
@@ -198,4 +208,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textDecorationLine: 'underline',
   },
+  alignCenterButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'blue'
+  }
 });
