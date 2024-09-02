@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
-import { Ionicons } from '@expo/vector-icons'; // Importar ícones
 import MapView, { Marker } from 'react-native-maps';
 import { router, useRouter } from 'expo-router'
 import { BottomSheet } from '@/components/PopUp'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const App: React.FC = () => {
   const [asideVisible, setAsideVisible] = useState<boolean>(false);
