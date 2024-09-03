@@ -1,101 +1,59 @@
-// RegisterScreen.js
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Pressable, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
-import { useNavigation } from '@react-navigation/native'; 
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Image, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient'; // Importa o LinearGradient
+import { useNavigation } from '@react-navigation/native';
 
-const RegisterScreen = () => {
-  const [nome, setNome] = useState('');
-  const [dt_nasc, setDtNasc] = useState('');
+
+export default function App() {
+  const [name, setName] = useState('');
+  const [birthdate, setBirthdate] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [cpf, setCpf] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmsenha, setConfirmsenha] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showsenha, setShowsenha] = useState(false);
-  const [showConfirmsenha, setShowConfirmsenha] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigation = useNavigation();
 
-  const handleRegister = async () => {
-    if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha) {
-      alert('Todos os campos são obrigatórios.');
-      return;
-    }
-
-    if (senha !== confirmsenha) {
-      alert('As senhas não coincidem.');
-      return;
-    }
-
+  const handleRegister = () => {
     setLoading(true);
-
-    try {
-      const response = await fetch('http://172.16.11.20:3000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nome,
-          dt_nasc,
-          email,
-          username,
-          cpf,
-          senha,
-          confirmsenha,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert('Cadastro realizado com sucesso');
-        setNome('');
-        setDtNasc('');
-        setEmail('');
-        setUsername('');
-        setCpf('');
-        setSenha('');
-        setConfirmsenha('');
-      } else {
-        alert(result.message || 'Erro ao realizar o cadastro.');
-      }
-    } catch (error) {
-      console.error('Erro ao enviar o cadastro:', error);
-      alert('Erro ao realizar o cadastro.');
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      alert('Cadastro realizado com sucesso');
+    }, 2000);
   };
 
-  const handleLogin = () => {
+    const handleLogin = () => {
     navigation.navigate('Login');
   };
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <LinearGradient
+      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']} // Cores do gradiente
+      style={styles.container} // Aplica o gradiente ao container
+    >
       <StatusBar style="auto" />
       <View style={styles.imageContainer}>
-        <Image 
-          source={{ uri: 'https://static.vecteezy.com/ti/vetor-gratis/p3/11186876-simbolo-de-foto-de-perfil-masculino-vetor.jpg' }}
-          style={styles.profileImage} 
+        <Image
+          source={require('../Images/logoSOS.png')} // Ajuste o caminho para o local correto da imagem
+          style={styles.profileImage}
         />
       </View>
-      <Text style={styles.title}>Cadastro</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          value={nome}
-          onChangeText={setNome}
+          value={name}
+          onChangeText={setName}
           placeholder="Nome"
         />
         <TextInput
           style={styles.input}
-          value={dt_nasc}
-          onChangeText={setDtNasc}
+          value={birthdate}
+          onChangeText={setBirthdate}
           placeholder="Data de Nascimento (dd/mm/aaaa)"
         />
         <TextInput
@@ -118,39 +76,42 @@ const RegisterScreen = () => {
           placeholder="CPF"
           keyboardType="numeric"
         />
-        <View style={styles.senhaContainer}>
+        <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.senhaInput}
-            value={senha}
-            onChangeText={setSenha}
-            secureTextEntry={!showsenha}
+            style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
             placeholder="Senha"
+            placeholderTextColor="#FFF"
           />
-          <Pressable onPress={() => setShowsenha(!showsenha)} style={styles.eyeIcon}>
-            <Ionicons 
-              name={showsenha ? 'eye-off' : 'eye'} 
-              size={24} 
-              color="#01355C" 
+          <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+            <Ionicons
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={24}
+              color="#fff"
             />
           </Pressable>
         </View>
-        <View style={styles.senhaContainer}>
+        <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.senhaInput}
-            value={confirmsenha}
-            onChangeText={setConfirmsenha}
-            secureTextEntry={!showConfirmsenha}
+            style={styles.passwordInput}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry={!showConfirmPassword}
             placeholder="Confirme a Senha"
+            placeholderTextColor="#FFF"
           />
-          <Pressable onPress={() => setShowConfirmsenha(!showConfirmsenha)} style={styles.eyeIcon}>
-            <Ionicons 
-              name={showConfirmsenha ? 'eye-off' : 'eye'} 
-              size={24} 
-              color="#01355C" 
+          <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
+            <Ionicons
+              name={showConfirmPassword ? 'eye-off' : 'eye'}
+              size={24}
+              color="#fff"
             />
           </Pressable>
         </View>
       </View>
+
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
         {loading ? (
           <ActivityIndicator color="#fff" />
@@ -158,37 +119,30 @@ const RegisterScreen = () => {
           <Text style={styles.buttonText}>Cadastrar</Text>
         )}
       </TouchableOpacity>
+
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.footerButton} onPress={handleLogin}>
           <Text style={styles.footerButtonText}>Já tem uma conta? Faça login</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </LinearGradient>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#01355C',
   },
   imageContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
   profileImage: {
-    width: 100,  
-    height: 100, 
-    borderRadius: 50, 
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#ffff',
+    width: 200,
+    height: 100,
+    borderRadius: 50,
   },
   inputContainer: {
     marginBottom: 20,
@@ -199,21 +153,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     backgroundColor: 'white',
   },
-  senhaContainer: {
+  passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingBottom: 10,
   },
-  senhaInput: {
+  passwordInput: {
+    color: '#FFF',
     flex: 1,
     height: 40,
     borderColor: '#000',
     borderWidth: 1,
     borderRadius: 15,
     paddingHorizontal: 10,
-    color: "#fff"
   },
   eyeIcon: {
     position: 'absolute',
@@ -223,9 +178,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
+    padding: 10,
+    display: 'flex',
+    alignItems: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FF0000',
     borderRadius: 15,
-    alignItems: 'center',
     marginBottom: 20,
   },
   buttonText: {
@@ -246,5 +205,3 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
-
-export default RegisterScreen;

@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
-import { Ionicons } from '@expo/vector-icons'; // Importar ícones
 import MapView, { Marker } from 'react-native-maps';
+import { useRouter } from 'expo-router'; // Importar useRouter
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { BottomSheet } from '@/components/PopUp';
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
+  const router = useRouter(); // Obtém a instância do roteador
 
   const toggleAside = () => {
     setAsideVisible(!asideVisible);
@@ -13,6 +16,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
+      <BottomSheet />
       <TouchableOpacity style={styles.menuButton} onPress={toggleAside}>
         <Ionicons name="menu" size={30} color="#fff" />
       </TouchableOpacity>
@@ -32,14 +36,14 @@ const App = () => {
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => alert('Perfil')}>
+          <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
             <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
-            <Text style={styles.optionText}>Histórico de chamadas</Text>
+            <Text style={styles.optionText}>Histórico</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.option} onPress={() => alert('Convide amigos')}>
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 5,
     borderWidth: 1,
-    borderColor: '#003B6F',
+    borderColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -146,6 +150,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 
