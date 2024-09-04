@@ -1,22 +1,40 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import MapView, { Marker } from 'react-native-maps';
-import { useRouter } from 'expo-router'; // Importar useRouter
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BottomSheet } from '@/components/PopUp';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
-  const router = useRouter(); // Obtém a instância do roteador
+  const [pins, setPins] = useState([]);
+  const navigation = useNavigation();
 
   const toggleAside = () => {
     setAsideVisible(!asideVisible);
   };
 
+  const handleFilterSelect = async (filter) => {
+    try {
+      const response = await axios.get('http://172.16.11.20:3005/tcc', {
+        params: { type: filter },
+      });
+      setPins(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar pinos:', error.message);
+      Alert.alert('Erro', 'Erro ao buscar pinos. Verifique a conexão e tente novamente.');
+    }
+  };
+
+  useEffect(() => {
+    handleFilterSelect(null); // Carrega todos os pinos inicialmente
+  }, []);
+
   return (
     <View style={styles.container}>
-      <BottomSheet />
+      <BottomSheet onFilterSelect={handleFilterSelect} />
       <TouchableOpacity style={styles.menuButton} onPress={toggleAside}>
         <Ionicons name="menu" size={30} color="#fff" />
       </TouchableOpacity>
@@ -36,7 +54,7 @@ const App = () => {
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilClientes')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
@@ -62,7 +80,13 @@ const App = () => {
           longitudeDelta: 0.0421,
         }}
       >
-        <Marker coordinate={{ latitude: -23.55052, longitude: -46.633309 }} />
+        {pins.map(pin => (
+          <Marker
+            key={pin.id}
+            coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+            title={pin.type}
+          />
+        ))}
       </MapView>
     </View>
   );
@@ -113,7 +137,7 @@ const styles = StyleSheet.create({
   userSection: {
     alignItems: 'center',
     marginBottom: 20,
-    marginTop: 80, // Ajuste para dar espaço ao botão de fechar
+    marginTop: 80,
   },
   loginText: {
     color: '#fff',

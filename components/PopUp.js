@@ -1,11 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Animated, PanResponder } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { height } = Dimensions.get('window');
 
-export function BottomSheet() {
-  const [isExpanded, setIsExpanded] = useState(true);
+export function BottomSheet({ onFilterSelect }) {
   const animatedHeight = useRef(new Animated.Value(height * 0.3)).current;
 
   const panResponder = useRef(
@@ -24,6 +23,10 @@ export function BottomSheet() {
     })
   ).current;
 
+  const handleFilterSelect = (type) => {
+    onFilterSelect(type); // Notifica o componente pai com o filtro selecionado
+  };
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -36,14 +39,17 @@ export function BottomSheet() {
         >
           <View style={styles.handle} />
           <View style={styles.content}>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Mecânico?</Text>
+            <TouchableOpacity style={styles.options} onPress={() => handleFilterSelect('mecanico')}>
+              <Text style={styles.centralizarTextos}>Mecânico</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Eletricista?</Text>
+            <TouchableOpacity style={styles.options} onPress={() => handleFilterSelect('eletricista')}>
+              <Text style={styles.centralizarTextos}>Eletricista</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Borracheiro?</Text>
+            <TouchableOpacity style={styles.options} onPress={() => handleFilterSelect('borracheiro')}>
+              <Text style={styles.centralizarTextos}>Borracheiro</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.options} onPress={() => handleFilterSelect(null)}>
+              <Text style={styles.centralizarTextos}>Todos</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>

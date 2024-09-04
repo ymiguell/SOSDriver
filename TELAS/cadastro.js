@@ -2,58 +2,100 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient'; // Importa o LinearGradient
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
-
 export default function App() {
-  const [name, setName] = useState('');
-  const [birthdate, setBirthdate] = useState('');
+  const [nome, setNome] = useState('');
+  const [dt_nasc, setDtNasc] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [cpf, setCpf] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmsenha, setConfirmsenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigation = useNavigation();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
+    if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha) {
+      alert('Todos os campos são obrigatórios.');
+      return;
+    }
+
+    if (senha !== confirmsenha) {
+      alert('As senhas não coincidem.');
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://172.16.11.20:3000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nome,
+          dt_nasc,
+          email,
+          username,
+          cpf,
+          senha,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Cadastro realizado com sucesso');
+        setNome('');
+        setDtNasc('');
+        setEmail('');
+        setUsername('');
+        setCpf('');
+        setSenha('');
+        setConfirmsenha('');
+      } else {
+        alert(result.message || 'Erro ao realizar o cadastro.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar o cadastro:', error);
+      alert('Erro ao realizar o cadastro.');
+    } finally {
       setLoading(false);
-      alert('Cadastro realizado com sucesso');
-    }, 2000);
+    }
   };
 
-    const handleLogin = () => {
+  const handleLogin = () => {
     navigation.navigate('Login');
   };
+
   return (
     <LinearGradient
-      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']} // Cores do gradiente
-      style={styles.container} // Aplica o gradiente ao container
+      colors={['#01355C', '#014B82', '#0262A9', '#0264AC', '#0270C2', '#013860']}
+      style={styles.container}
     >
       <StatusBar style="auto" />
       <View style={styles.imageContainer}>
         <Image
-          source={require('../Images/logoSOS.png')} // Ajuste o caminho para o local correto da imagem
+          source={require('../Images/logoSOS.png')}
           style={styles.profileImage}
         />
       </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          value={name}
-          onChangeText={setName}
+          value={nome}
+          onChangeText={setNome}
           placeholder="Nome"
         />
         <TextInput
           style={styles.input}
-          value={birthdate}
-          onChangeText={setBirthdate}
+          value={dt_nasc}
+          onChangeText={setDtNasc}
           placeholder="Data de Nascimento (dd/mm/aaaa)"
         />
         <TextInput
@@ -79,8 +121,8 @@ export default function App() {
         <View style={styles.passwordContainer}>
           <TextInput
             style={styles.passwordInput}
-            value={password}
-            onChangeText={setPassword}
+            value={senha}
+            onChangeText={setSenha}
             secureTextEntry={!showPassword}
             placeholder="Senha"
             placeholderTextColor="#FFF"
@@ -96,8 +138,8 @@ export default function App() {
         <View style={styles.passwordContainer}>
           <TextInput
             style={styles.passwordInput}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            value={confirmsenha}
+            onChangeText={setConfirmsenha}
             secureTextEntry={!showConfirmPassword}
             placeholder="Confirme a Senha"
             placeholderTextColor="#FFF"
