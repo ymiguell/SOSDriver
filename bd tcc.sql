@@ -2,6 +2,7 @@
 CREATE database tcc;
 USE tcc ;
 
+    
 CREATE TABLE  Avaliação (
   pontuacao INT NOT NULL,
   ocorrencia_id VARCHAR(45) NOT NULL,
@@ -9,48 +10,50 @@ CREATE TABLE  Avaliação (
   );
 
 CREATE TABLE Endereco (
+  id int not null auto_increment,
   cep INT NOT NULL,
+  numero_casa int not null,
   endereco varchar(100),
   PRIMARY KEY (cep));
 
 CREATE TABLE  Usuario (
   id INT NOT NULL,
-  email VARCHAR(45) NOT NULL,
+  email VARCHAR(45) unique NOT NULL,
   senha VARCHAR(45) NOT NULL,
   telefone varchar(15) not null,
-  FOREIGN KEY (duvida_doq_vai_aqui) REFERENCES Endereco(cep)
+  username varchar(20) not null,
+  id_endereco int not null,
+  tipo_usuario varchar(20),
+  primary key (email),
+  FOREIGN KEY (id_endereco) REFERENCES Endereco(id)
 	);
     
-CREATE TABLE  cliente_cadastro (
+CREATE TABLE  cliente(
   id int auto_increment,
   nome INT NOT NULL,
   dt_nasc VARCHAR(10) NOT NULL,
-  email varchar(20) not null,
-  username varchar(20) not null,
   cpf varchar(14) not null,
-  senha varchar(15)not null,
-  rept_senha varchar(15)not null,
-  primary key (id)
-  
+  primary key (id),
+  id_usuario int not null,
+  FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 	);
-    FOREIGN KEY (duvida_doq_vai_aqui) REFERENCES Endereco(cep)
+    
 CREATE TABLE ocorrencia (
   ocorrencia INT NOT NULL,
   id VARCHAR(45) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES Endereco(cep)
+  lat/long
 	);
 ;
 CREATE TABLE  prestadoresServico (
+  id int auto_increment,
   nome INT NOT NULL,
   dt_nasc VARCHAR(10) NOT NULL,
-  email varchar(20) not null,
-  usernome varchar(20) not null,
   cnpj varchar(14) not null,
-  senha varchar(15)not null,
-  confirmsenha varchar(15)not null,
-  primary key (cpf),
-  FOREIGN KEY (duvida_doq_vai_aqui) REFERENCES Endereco(cep)
+  primary key (id),
+  id_usuario int not null,
+  FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 	);
     
     create table notificacao_user_para_mecanico (
@@ -70,3 +73,17 @@ CREATE TABLE  prestadoresServico (
     );
 
 select * from cliente_cadastro;
+
+CREATE TABLE pins (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  latitude DECIMAL(9, 6) NOT NULL,
+  longitude DECIMAL(9, 6) NOT NULL,
+  type ENUM('mecanico', 'borracheiro', 'eletricista') NOT NULL
+);
+
+INSERT INTO pins (name, latitude, longitude, type) VALUES
+('Mecânico do João', -23.550520, -46.633309, 'mecanico'),
+('Borracheiro da Maria', -23.556220, -46.634000, 'borracheiro'),
+('Eletricista do Carlos', -23.549860, -46.631100, 'eletricista');
+

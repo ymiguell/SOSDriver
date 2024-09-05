@@ -32,7 +32,7 @@ export default function App() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://172.16.11.20:3000/register', {
+      const response = await fetch('http://172.16.11.20:3000/cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

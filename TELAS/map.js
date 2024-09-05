@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Dimensions, Alert, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MapView, { Marker } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -18,10 +18,16 @@ const App = () => {
 
   const handleFilterSelect = async (filter) => {
     try {
-      const response = await axios.get('http://172.16.11.20:3005/tcc', {
+      const response = await axios.get('http://172.16.11.20:3005/pins', {
         params: { type: filter },
       });
-      setPins(response.data);
+      // Converter latitude e longitude para números
+      const formattedPins = response.data.map(pin => ({
+        ...pin,
+        latitude: parseFloat(pin.latitude),
+        longitude: parseFloat(pin.longitude),
+      }));
+      setPins(formattedPins);
     } catch (error) {
       console.error('Erro ao buscar pinos:', error.message);
       Alert.alert('Erro', 'Erro ao buscar pinos. Verifique a conexão e tente novamente.');
@@ -84,7 +90,8 @@ const App = () => {
           <Marker
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-            title={pin.type}
+            title={pin.name}
+            description={pin.type}
           />
         ))}
       </MapView>
