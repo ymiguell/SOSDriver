@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Animated, PanResponder, GestureResponderEvent, PanResponderGestureState, Modal, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { height } = Dimensions.get('window');
 
@@ -154,13 +154,13 @@ export function BottomSheet() {
                 style={[styles.modalButton, styles.acceptButton]}
                 onPress={() => handleModalResponse('accept')}
               >
-                <MaterialIcons name="thumb-up" size={24} color="white" />
+                <MaterialCommunityIcons name="check" size={24} color="white" />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.rejectButton]}
                 onPress={() => handleModalResponse('reject')}
               >
-                <MaterialIcons name="thumb-down" size={24} color="white" />
+                <MaterialCommunityIcons name="close" size={24} color="white" />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalButton, styles.callButton]}
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   modalButton: {
     padding: 15,
     borderRadius: 50, // Arredondamento dos botões do modal
-    width: '30%',
+    width: '20%',
     alignItems: 'center',
     justifyContent: 'center',
   },
