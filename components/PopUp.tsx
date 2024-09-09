@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Animated, PanResponder, GestureResponderEvent, PanResponderGestureState } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Animated, PanResponder, GestureResponderEvent, PanResponderGestureState, Modal, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const { height } = Dimensions.get('window');
 
@@ -8,6 +9,8 @@ export function BottomSheet() {
   const [isButtonsVisible, setIsButtonsVisible] = useState(true);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [mechanicsList, setMechanicsList] = useState<{ name: string; rating: string; latitude: number; longitude: number }[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedMechanic, setSelectedMechanic] = useState<{ name: string; rating: string } | null>(null);
   const animatedHeight = useRef(new Animated.Value(height * 0.3)).current;
 
   const panResponder = useRef(
@@ -41,8 +44,24 @@ export function BottomSheet() {
   };
 
   const handleMechanicPress = (mechanic: { name: string; rating: string }) => {
-    // Placeholder for mechanic selection action (e.g., show details or perform an action)
-    console.log(`Selecionado: ${mechanic.name} com rating ${mechanic.rating}`);
+    setSelectedMechanic(mechanic);
+    setIsModalVisible(true);
+  };
+
+  const handleModalResponse = (response: 'accept' | 'reject' | 'call') => {
+    setIsModalVisible(false);
+    if (response === 'accept') {
+      // Placeholder for accepted action
+      console.log(`Aceitou ajuda do mecânico: ${selectedMechanic?.name}`);
+    } else if (response === 'reject') {
+      // Placeholder for rejected action
+      console.log(`Rejeitou ajuda do mecânico: ${selectedMechanic?.name}`);
+    } else if (response === 'call') {
+      // Placeholder for calling action (e.g., initiate phone call)
+      const phoneNumber = '199999999'; // Example phone number
+      Linking.openURL(`tel:${phoneNumber}`);
+    }
+    setSelectedMechanic(null);
   };
 
   const handleBackPress = () => {
@@ -120,6 +139,39 @@ export function BottomSheet() {
           </View>
         </LinearGradient>
       </Animated.View>
+
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Você gostaria de aceitar a ajuda de {selectedMechanic?.name}?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.acceptButton]}
+                onPress={() => handleModalResponse('accept')}
+              >
+                <MaterialIcons name="thumb-up" size={24} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.rejectButton]}
+                onPress={() => handleModalResponse('reject')}
+              >
+                <MaterialIcons name="thumb-down" size={24} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.callButton]}
+                onPress={() => handleModalResponse('call')}
+              >
+                <MaterialIcons name="phone" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -164,7 +216,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   contentContainer: {
-    width: '90%', // Adjust width as needed to match text above
+    width: '90%',
     alignItems: 'center',
   },
   options: {
@@ -174,7 +226,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     width: '50%',
-    borderRadius: 10,
+    borderRadius: 30, // Arredondamento dos botões
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   centralizarTextos: {
     textAlign: 'center',
@@ -222,6 +276,49 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
+    padding: 15,
+    borderRadius: 50, // Arredondamento dos botões do modal
+    width: '30%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+  },
+  rejectButton: {
+    backgroundColor: '#F44336',
+  },
+  callButton: {
+    backgroundColor: '#2196F3',
+  },
+  modalButtonText: {
+    color: 'white',
     fontWeight: 'bold',
   },
 });
