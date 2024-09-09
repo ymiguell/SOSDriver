@@ -5,7 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 const { height } = Dimensions.get('window');
 
 export function BottomSheet() {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isButtonsVisible, setIsButtonsVisible] = useState(true);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [mechanicsList, setMechanicsList] = useState<{ name: string; rating: string; latitude: number; longitude: number }[]>([]);
   const animatedHeight = useRef(new Animated.Value(height * 0.3)).current;
 
   const panResponder = useRef(
@@ -24,6 +26,84 @@ export function BottomSheet() {
     })
   ).current;
 
+  const handleOptionPress = (option: string) => {
+    setSelectedOption(option);
+    setIsButtonsVisible(false);
+
+    // Define a lista de mecânicos fictícios
+    const mechanics = [
+      { name: 'João', rating: '4.5 estrelas', latitude: -23.550520, longitude: -46.633308 },
+      { name: 'Maria', rating: '4.7 estrelas', latitude: -22.906847, longitude: -43.172896 },
+      { name: 'Pedro', rating: '4.3 estrelas', latitude: -19.916681, longitude: -43.934493 },
+    ];
+
+    setMechanicsList(mechanics);
+  };
+
+  const handleMechanicPress = (mechanic: { name: string; rating: string }) => {
+    // Placeholder for mechanic selection action (e.g., show details or perform an action)
+    console.log(`Selecionado: ${mechanic.name} com rating ${mechanic.rating}`);
+  };
+
+  const handleBackPress = () => {
+    setSelectedOption(null);
+    setMechanicsList([]);
+    setIsButtonsVisible(true);
+  };
+
+  const renderContent = () => {
+    if (!isButtonsVisible) {
+      return (
+        <View style={styles.contentContainer}>
+          <Text style={styles.contentText}>
+            Você escolheu {selectedOption}!
+          </Text>
+          <View style={styles.mechanicsList}>
+            {mechanicsList.map((mechanic, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.mechanicItem}
+                onPress={() => handleMechanicPress(mechanic)}
+              >
+                <Text style={styles.mechanicName}>{mechanic.name}</Text>
+                <Text style={styles.mechanicRating}>{mechanic.rating}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={handleBackPress}
+          >
+            <Text style={styles.backButtonText}>Voltar</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return (
+      <>
+        <TouchableOpacity
+          style={styles.options}
+          onPress={() => handleOptionPress('Mecânico')}
+        >
+          <Text style={styles.centralizarTextos}>Mecânico?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.options}
+          onPress={() => handleOptionPress('Eletricista')}
+        >
+          <Text style={styles.centralizarTextos}>Eletricista?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.options}
+          onPress={() => handleOptionPress('Borracheiro')}
+        >
+          <Text style={styles.centralizarTextos}>Borracheiro?</Text>
+        </TouchableOpacity>
+      </>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Animated.View
@@ -36,15 +116,7 @@ export function BottomSheet() {
         >
           <View style={styles.handle} />
           <View style={styles.content}>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Mecânico?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Eletricista?</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.options}>
-              <Text style={styles.centralizarTextos}>Borracheiro?</Text>
-            </TouchableOpacity>
+            {renderContent()}
           </View>
         </LinearGradient>
       </Animated.View>
@@ -91,6 +163,10 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
+  contentContainer: {
+    width: '90%', // Adjust width as needed to match text above
+    alignItems: 'center',
+  },
   options: {
     alignSelf: 'center',
     marginBottom: 20,
@@ -103,5 +179,49 @@ const styles = StyleSheet.create({
   centralizarTextos: {
     textAlign: 'center',
     color: 'white',
+  },
+  contentText: {
+    textAlign: 'center',
+    color: 'white',
+    marginTop: 20,
+    width: '100%',
+  },
+  mechanicsList: {
+    marginTop: 20,
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+  },
+  mechanicItem: {
+    backgroundColor: '#f9f9f9',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  mechanicName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  mechanicRating: {
+    fontSize: 14,
+    color: '#555',
+  },
+  backButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#005AA6',
+    borderRadius: 8,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
