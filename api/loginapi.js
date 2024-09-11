@@ -1,41 +1,69 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken'); // Certifique-se de que isso está no início do arquivo
+const mysql = require('mysql2');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const app = express();
 const PORT = 3001;
+
+// Configuração do banco de dados
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'tcc'
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco de dados:', err);
+    process.exit(1);
+  }
+  console.log('Conectado ao banco de dados.');
+});
 
 // Middleware
 app.use(bodyParser.json());
 
-// Mock User Data (replace with your database logic)
-const users = [
-    { username: 'testuser', senha: 'password123' } // Dados de exemplo
-];
-
-// Login Route
+// Rota de Login
 app.post('/api/login', (req, res) => {
     const { username, senha } = req.body;
 
-    // Validate the inputs
+    // Valida os campos
     if (!username || !senha) {
-        return res.status(400).json({ message: 'Insira seu Username e senha .' });
+        return res.status(400).json({ mensagem: 'Insira seu Username e senha.' });
     }
 
-    // Find the user
-    const user = users.find(u => u.username === username && u.senha === senha); // Verificação
+    // Encontra o usuário no banco de dados
+    const sql = 'SELECT * FROM cliente_cadastro WHERE username = ?';
+    db.query(sql, [username], (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar usuário:', err);
+            return res.status(500).json({ mensagem: 'Erro ao realizar o login.' });
+        }
 
-    if (!user) {
-        return res.status(401).json({ message: 'Username e senha inválidos.' });
-    }
+        if (results.length === 0) {
+            return res.status(401).json({ mensagem: 'Username ou senha inválidos.' });
+        }
 
-    // Generate a token
-    const token = jwt.sign({ username: user.username }, 'your_jwt_secret', { expiresIn: '1h' });
+        const usuario = results[0];
 
-    res.json({ token });
+        // Verifica a senha
+        bcrypt.compare(senha, usuario.senha, (err, resultado) => {
+            if (err || !resultado) {
+                return res.status(401).json({ mensagem: 'Username ou senha inválidos.' });
+            }
+
+            // Gera um token
+            const token = jwt.sign({ username: usuario.username }, 'seu_segredo_jwt', { expiresIn: '1h' });
+
+            res.json({ token });
+        });
+    });
 });
 
-// Start Server
+// Inicia o servidor
 app.listen(PORT, () => {
-    console.log(`Server running on http://172.16.11.20:${PORT}`);
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-  

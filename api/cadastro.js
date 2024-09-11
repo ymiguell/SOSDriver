@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 
-// Crie uma instância do Express
 const app = express();
 const port = 3000;
 
@@ -14,7 +13,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',  
+  password: '',
   database: 'tcc'
 });
 
@@ -27,7 +26,10 @@ db.connect((err) => {
 });
 
 // Endpoint para cadastro de usuário
-app.post('/register', async (req, res) => {
+app.post('/cliente_cadastro', async (req, res) => {
+  console.log('Recebendo requisição POST em /cliente_cadastro');
+  console.log('Corpo da requisição:', req.body);
+
   const { nome, dt_nasc, email, username, cpf, senha, confirmsenha } = req.body;
 
   // Verifica se todos os campos necessários estão presentes

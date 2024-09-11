@@ -24,15 +24,15 @@ export default function App() {
       alert('Todos os campos são obrigatórios.');
       return;
     }
-
+  
     if (senha !== confirmsenha) {
       alert('As senhas não coincidem.');
       return;
     }
-
+  
     setLoading(true);
     try {
-      const response = await fetch('http://172.16.11.20:3000/cadastro', {
+      const response = await fetch('http://172.16.11.20:3000/cliente_cadastro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,11 +44,24 @@ export default function App() {
           username,
           cpf,
           senha,
+          confirmsenha
         }),
       });
-
-      const result = await response.json();
-
+  
+      // Adicionar esta linha para verificar o conteúdo da resposta
+      const responseText = await response.text();
+      console.log('Resposta do servidor:', responseText);
+  
+      // Verificar se a resposta é JSON e processá-la
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Erro ao analisar JSON:', e);
+        alert('Resposta inesperada do servidor.');
+        return;
+      }
+  
       if (response.ok) {
         alert('Cadastro realizado com sucesso');
         setNome('');

@@ -60,7 +60,7 @@ const App = () => {
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilClientes')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilCliente')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>

@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useRouter } from 'expo-router'; // Se você está usando `expo-router`
+import { useUser } from '../UserContext'; // Ajuste o caminho conforme necessário
 
 export default function PerfilUser() {
-  const router = useRouter();
+  const { user } = useUser();
 
   return (
     <LinearGradient
@@ -13,14 +12,13 @@ export default function PerfilUser() {
       style={styles.gradientBackground}
     >
       <View style={styles.container}>
-        
         <View style={styles.containerUser}>
           <Image
             source={{ uri: 'https://via.placeholder.com/100' }} 
             style={styles.profileImage}
           />
           <View style={styles.containerStar}>
-            <Text style={styles.titleStyle}>Miguel Melo</Text>
+            <Text style={styles.titleStyle}>{user.name}</Text>
             <View style={styles.starsContainer}>
               {[...Array(5)].map((_, index) => (
                 <Text key={index} style={styles.formatStars}>★</Text>
@@ -43,7 +41,7 @@ export default function PerfilUser() {
           <View style={styles.separateInputs}>
             <Text style={styles.label}>Alterar email:</Text>
             <TextInput 
-              placeholder="seuemail@exemplo.com" 
+              placeholder={user.email} // Email do usuário
               placeholderTextColor="#ccc" 
               style={styles.inputText} 
               keyboardType="email-address"
@@ -131,9 +129,5 @@ const styles = StyleSheet.create({
     color: '#FFFF00',
     fontSize: 24,
     marginHorizontal: 2,
-  },
-  backButton: {
-    marginBottom: 20,
-    alignSelf: 'flex-start',
   },
 });
