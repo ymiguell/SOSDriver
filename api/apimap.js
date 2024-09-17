@@ -30,9 +30,9 @@ connection.connect((err) => {
 app.get('/pins', (req, res) => {
   const type = req.query.type;
 
-  let query = 'SELECT * FROM pins';
+  let query = "SELECT * FROM pins where type != 'cliente'";
   if (type) {
-    query += ' WHERE type = ?';
+    query += ' and type = ?';
   }
 
   connection.query(query, [type], (err, results) => {
