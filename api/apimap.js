@@ -27,19 +27,42 @@ connection.connect((err) => {
 });
 
 // Rota para obter pinos
-app.get('/pins', (req, res) => {
+app.get('/usuario', (req, res) => {
   const type = req.query.type;
 
-  let query = "SELECT * FROM pins where type != 'cliente'";
-  if (type) {
-    query += ' and type = ?';
+  // Cria uma lista de tipos válidos
+  const validTypes = ['mecanico', 'borracheiro', 'eletricista'];
+
+  // Verifica se o tipo fornecido é válido
+  if (type && !validTypes.includes(type)) {
+    return res.status(400).json({ message: 'Tipo inválido.' });
   }
 
-  connection.query(query, [type], (err, results) => {
+  // Monta a consulta SQL
+  let query = `
+    SELECT id, nome, latitude, longitude, type AS tipo_usuario 
+    FROM usuario 
+    WHERE type != 'cliente'
+  `;
+  if (type) {
+    query += ' AND type = ?';
+  }
+
+  // Executa a consulta
+  connection.query(query, [type].filter(Boolean), (err, results) => {
     if (err) {
-      res.status(500).json({ message: 'Error fetching pins', error: err.message });
+      console.error('Error fetching data from MySQL:', err);
+      res.status(500).json({ message: 'Erro ao buscar dados', error: err.message });
     } else {
-      res.json(results);
+      // Formata a resposta para incluir apenas os dados necessários
+      const formattedResults = results.map(user => ({
+        id: user.id,
+        nome: user.nome,
+        type: user.tipo_usuario,
+        latitude: parseFloat(user.latitude),
+        longitude: parseFloat(user.longitude),
+      }));
+      res.json(formattedResults);
     }
   });
 });

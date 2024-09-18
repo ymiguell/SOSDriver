@@ -18,10 +18,10 @@ const App = () => {
 
   const handleFilterSelect = async (filter) => {
     try {
-      const response = await axios.get('http://172.16.11.20:3005/pins', {
+      const response = await axios.get('http://172.16.11.20:3005/usuario', {
         params: { type: filter },
       });
-      // Converter latitude e longitude para números
+      // Converter latitude e longitude para números, se necessário
       const formattedPins = response.data.map(pin => ({
         ...pin,
         latitude: parseFloat(pin.latitude),
@@ -80,17 +80,17 @@ const App = () => {
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: -23.55052,
-          longitude: -46.633309,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitude: -22.4333,
+          longitude: -46.9575,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
         }}
       >
         {pins.map(pin => (
           <Marker
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-            title={pin.name}
+            title={pin.nome}
             description={pin.type}
           />
         ))}

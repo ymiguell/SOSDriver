@@ -1,10 +1,35 @@
-import React from 'react';
-import { View, Text, TextInput, Image, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, StyleSheet, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useUser } from '../UserContext'; // Ajuste o caminho conforme necessário
 
 export default function PerfilUser() {
-  const { user } = useUser();
+  const [user, setUser] = useState({ name: '', email: '', phone: '' });
+  const { token } = useUser(); // Assumindo que você está passando o token do contexto
+
+  useEffect(() => {
+    fetchProfile();
+  }, [token]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('http://localhost:3002/api/perfil', { // Para emuladores Android, use 10.0.2.2
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha ao carregar perfil');
+      }
+
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar o perfil.');
+      console.error('Erro ao buscar perfil:', error);
+    }
+  };
 
   return (
     <LinearGradient
@@ -29,22 +54,20 @@ export default function PerfilUser() {
 
         <View style={styles.containerInfo}>
           <View style={styles.separateInputs}>
-            <Text style={styles.label}>Alterar Telefone:</Text>
+            <Text style={styles.label}>Telefone:</Text>
             <TextInput 
-              placeholder="999" 
-              placeholderTextColor="#ccc" 
+              value={user.phone} 
               style={styles.inputText} 
-              keyboardType="phone-pad"
+              editable={false}
             />
           </View>
 
           <View style={styles.separateInputs}>
-            <Text style={styles.label}>Alterar email:</Text>
+            <Text style={styles.label}>Email:</Text>
             <TextInput 
-              placeholder={user.email} // Email do usuário
-              placeholderTextColor="#ccc" 
+              value={user.email} 
               style={styles.inputText} 
-              keyboardType="email-address"
+              editable={false}
             />
           </View>
 

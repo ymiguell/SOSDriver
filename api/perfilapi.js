@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 3002; // Use uma porta diferente da porta de login e cadastro
+const PORT = 3002; // Porta para o servidor de perfil
 
 // Configuração do banco de dados
 const db = mysql.createConnection({
@@ -44,7 +44,7 @@ app.get('/api/perfil', authenticateToken, (req, res) => {
   const username = req.user.username; // Extrai o nome de usuário do token decodificado
 
   // Encontra o usuário no banco de dados
-  const sql = 'SELECT name, email FROM cliente_cadastro WHERE username = ?';
+  const sql = 'SELECT nome AS name, email, telefone AS phone FROM usuario WHERE username = ?';
   db.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Erro ao buscar perfil do usuário:', err);

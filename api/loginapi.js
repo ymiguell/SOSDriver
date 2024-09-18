@@ -36,7 +36,7 @@ app.post('/api/login', (req, res) => {
     }
 
     // Encontra o usuário no banco de dados
-    const sql = 'SELECT * FROM cliente_cadastro WHERE username = ?';
+    const sql = 'SELECT * FROM usuario WHERE username = ?';
     db.query(sql, [username], (err, results) => {
         if (err) {
             console.error('Erro ao buscar usuário:', err);

@@ -1,39 +1,28 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
-
-const app = express();
-const port = 3000;
-
-// Middleware para parsear JSON
-app.use(bodyParser.json());
-
-// Configuração do banco de dados
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'tcc'
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    process.exit(1);
-  }
-  console.log('Conectado ao banco de dados.');
-});
-
-// Endpoint para cadastro de usuário
-app.post('/cliente_cadastro', async (req, res) => {
-  console.log('Recebendo requisição POST em /cliente_cadastro');
+app.post('/usuario', async (req, res) => {
+  console.log('Recebendo requisição POST em /usuario');
   console.log('Corpo da requisição:', req.body);
 
-  const { nome, dt_nasc, email, username, cpf, senha, confirmsenha } = req.body;
+  const { nome, dt_nasc, email, username, cpf, senha, confirmsenha, telefone, cep, numero, endereco, latitude, longitude, type } = req.body;
+
 
   // Verifica se todos os campos necessários estão presentes
-  if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha) {
+  if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha || !telefone || !cep || !numero || !type) {
+    console.log('Campos ausentes:', {
+      nome,
+      dt_nasc,
+      email,
+      username,
+      cpf,
+      senha,
+      confirmsenha,
+      telefone,
+      cep,
+      numero,
+      endereco,
+      latitude,
+      longitude,
+      type
+    });
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
   }
 
@@ -47,8 +36,8 @@ app.post('/cliente_cadastro', async (req, res) => {
     const hashedsenha = await bcrypt.hash(senha, 10);
 
     // Insere o novo usuário no banco de dados
-    const sql = `INSERT INTO cliente_cadastro (nome, dt_nasc, email, username, cpf, senha) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [nome, dt_nasc, email, username, cpf, hashedsenha];
+    const sql = `INSERT INTO usuario (nome, dt_nasc, email, username, cpf, senha, telefone, cep, numero, endereco, latitude, longitude, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const values = [nome, dt_nasc, email, username, cpf, hashedsenha, telefone, cep, numero, endereco, latitude, longitude, type];
 
     db.query(sql, values, (err, results) => {
       if (err) {
@@ -62,9 +51,4 @@ app.post('/cliente_cadastro', async (req, res) => {
     console.error('Erro ao hashear a senha:', error);
     res.status(500).json({ message: 'Erro ao realizar o cadastro.' });
   }
-});
-
-// Inicie o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
 });

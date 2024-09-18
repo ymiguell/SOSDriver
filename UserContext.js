@@ -1,6 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'; 
+import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
-import jwt_decode from 'jwt-decode'; 
+import jwt_decode from 'jwt-decode';
 
 // Cria o contexto
 const UserContext = createContext();
@@ -9,7 +9,8 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
     name: '', 
-    email: '' 
+    email: '', 
+    phone: '' // Adiciona telefone se for necessário
   });
 
   const [token, setToken] = useState('');
@@ -17,7 +18,7 @@ export const UserProvider = ({ children }) => {
   // Função para fazer login
   const login = async (username, senha) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/login', {
+      const response = await axios.post('http://localhost:3002/api/login', {
         username,
         senha
       });
@@ -30,10 +31,7 @@ export const UserProvider = ({ children }) => {
       // Decodifica o token para obter o nome de usuário (opcional)
       const decoded = jwt_decode(token);
 
-      // Atualiza o estado do token e do usuário
-      setToken(token);
-
-      // Buscar perfil do usuário após login
+      // Atualiza o estado do usuário com base no token
       fetchUserProfile(token);
 
       return response.data;
@@ -46,7 +44,7 @@ export const UserProvider = ({ children }) => {
   // Função para buscar perfil do usuário
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.get('http://localhost:3002/api/perfil', {
+      const response = await axios.get('http://10.0.2.2:3002/api/perfil', { // Use 10.0.2.2 para emuladores Android
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -55,7 +53,7 @@ export const UserProvider = ({ children }) => {
       console.error('Erro ao buscar perfil do usuário:', error);
       // Limpar o token e o usuário se houver um erro
       setToken('');
-      setUser({ name: '', email: '' });
+      setUser({ name: '', email: '', phone: '' });
     }
   };
 
