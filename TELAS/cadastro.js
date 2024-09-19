@@ -60,16 +60,16 @@ export default function App() {
   };
 
   const handleRegister = async () => {
-    if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha || !telefone || !cep || !numero || !type) {
-      alert('Todos os campos são obrigatórios.');
+    if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha || !telefone || !cep || !numero || !type || !latitude || !longitude) {
+      alert('Todos os campos são obrigatórios, incluindo latitude e longitude.');
       return;
     }
-
+  
     if (senha !== confirmsenha) {
       alert('As senhas não coincidem.');
       return;
     }
-
+  
     setLoading(true);
     try {
       const response = await fetch('http://172.16.11.20:3000/usuario', {
@@ -84,31 +84,31 @@ export default function App() {
           username,
           cpf,
           senha,
-          confirmsenha,
           telefone,
           cep,
           numero,
           endereco,
           latitude,
           longitude,
-          type
+          type,
         }),
       });
-
-      const responseText = await response.text();
-      console.log('Resposta do servidor:', responseText);
-
+  
+      const responseText = await response.text(); // Usar text para capturar resposta
       let result;
+  
       try {
-        result = JSON.parse(responseText);
+        result = JSON.parse(responseText); // Tentar analisar JSON
       } catch (e) {
         console.error('Erro ao analisar JSON:', e);
         alert('Resposta inesperada do servidor.');
         return;
       }
-
+  
       if (response.ok) {
-        alert('Cadastro realizado com sucesso');
+        alert('Cadastro realizado com sucesso.');
+        // Aqui você pode adicionar a lógica para adicionar marcadores ao mapa, se necessário.
+        // Resetar estados após o sucesso
         setNome('');
         setDtNasc('');
         setEmail('');
@@ -133,6 +133,7 @@ export default function App() {
       setLoading(false);
     }
   };
+  
 
   const handleLogin = () => {
     navigation.navigate('Login');

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity, Dimensions, Alert, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Dimensions, Alert, Text, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BottomSheet } from '@/components/PopUp';
 import axios from 'axios';
@@ -21,11 +21,12 @@ const App = () => {
       const response = await axios.get('http://172.16.11.20:3005/usuario', {
         params: { type: filter },
       });
-      // Converter latitude e longitude para números, se necessário
       const formattedPins = response.data.map(pin => ({
         ...pin,
         latitude: parseFloat(pin.latitude),
         longitude: parseFloat(pin.longitude),
+        endereco: "pin.endereco",
+        telefone: "pin.telefone"
       }));
       setPins(formattedPins);
     } catch (error) {
@@ -37,6 +38,14 @@ const App = () => {
   useEffect(() => {
     handleFilterSelect(null); // Carrega todos os pinos inicialmente
   }, []);
+
+  const handleCall = (telefone) => {
+    Linking.openURL(`tel:${telefone}`);
+  };
+
+  const handleMessage = (telefone) => {
+    Linking.openURL(`sms:${telefone}`);
+  };
 
   return (
     <View style={styles.container}>
@@ -91,8 +100,31 @@ const App = () => {
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
             title={pin.nome}
-            description={pin.type}
-          />
+          >
+            <Callout>
+              <View style={styles.calloutContainer} pointerEvents="box-none">
+                <Text style={styles.calloutTitle}>{pin.nome}</Text>
+                <Text style={styles.calloutAddress}>{pin.telefone}</Text>
+                <Text style={styles.calloutAddress}>{pin.endereco}</Text>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleCall(pin.telefone)}
+                  >
+                    <Ionicons name="call" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Ligar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleMessage(pin.telefone)}
+                  >
+                    <Ionicons name="chatbubble" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>SMS</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Callout>
+          </Marker>
         ))}
       </MapView>
     </View>
@@ -186,6 +218,37 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  calloutContainer: {
+    width: 200,
+    padding: 10,
+  },
+  calloutTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  calloutAddress: {
+    color: 'black', // Cor preta para o endereço
+    fontSize: 14,
+    marginVertical: 5,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#005AA6',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 5,
+    width: 90,
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    marginLeft: 5,
   },
 });
 

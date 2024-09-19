@@ -40,7 +40,7 @@ app.get('/usuario', (req, res) => {
 
   // Monta a consulta SQL
   let query = `
-    SELECT id, nome, latitude, longitude, type AS tipo_usuario 
+    SELECT id, endereco, telefone, tipo_usuario, latitude, longitude
     FROM usuario 
     WHERE type != 'cliente'
   `;
@@ -58,9 +58,12 @@ app.get('/usuario', (req, res) => {
       const formattedResults = results.map(user => ({
         id: user.id,
         nome: user.nome,
+        endereco: user.endereco,
+        telefone: user.telefone,
         type: user.tipo_usuario,
         latitude: parseFloat(user.latitude),
         longitude: parseFloat(user.longitude),
+       
       }));
       res.json(formattedResults);
     }
