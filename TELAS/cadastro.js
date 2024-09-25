@@ -84,6 +84,7 @@ export default function App() {
           username,
           cpf,
           senha,
+          confirmsenha,
           telefone,
           cep,
           numero,

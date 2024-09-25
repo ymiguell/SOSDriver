@@ -8,9 +8,9 @@ const UserContext = createContext();
 // Provedor do contexto
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState({
-    name: '', 
+    nome:'',
     email: '', 
-    phone: '' // Adiciona telefone se for necessário
+    telefone:'' 
   });
 
   const [token, setToken] = useState('');
@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
   // Função para fazer login
   const login = async (username, senha) => {
     try {
-      const response = await axios.post('http://localhost:3002/api/login', {
+      const response = await axios.post('http://10.0.2.2:3002/api/login', {
         username,
         senha
       });
@@ -28,11 +28,15 @@ export const UserProvider = ({ children }) => {
       // Armazena o token
       setToken(token);
 
-      // Decodifica o token para obter o nome de usuário (opcional)
+      // Decodifica o token para obter informações do usuário
       const decoded = jwt_decode(token);
-
+      console.log('Decoded token:', decoded);
       // Atualiza o estado do usuário com base no token
-      fetchUserProfile(token);
+      setUser({
+        nome: decoded.nome || '',  
+        email: decoded.email || '',
+        telefone: decoded.telefone || '',
+      });
 
       return response.data;
     } catch (error) {
@@ -44,16 +48,15 @@ export const UserProvider = ({ children }) => {
   // Função para buscar perfil do usuário
   const fetchUserProfile = async (token) => {
     try {
-      const response = await axios.get('http://10.0.2.2:3002/api/perfil', { // Use 10.0.2.2 para emuladores Android
+      const response = await axios.get('http://10.0.2.2:3002/api/perfil', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       setUser(response.data);
     } catch (error) {
       console.error('Erro ao buscar perfil do usuário:', error);
-      // Limpar o token e o usuário se houver um erro
       setToken('');
-      setUser({ name: '', email: '', phone: '' });
+      setUser({ nome: '', email: '', telefone: '' });
     }
   };
 

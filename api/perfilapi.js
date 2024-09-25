@@ -44,7 +44,7 @@ app.get('/api/perfil', authenticateToken, (req, res) => {
   const username = req.user.username; // Extrai o nome de usuário do token decodificado
 
   // Encontra o usuário no banco de dados
-  const sql = 'SELECT nome AS name, email, telefone AS phone FROM usuario WHERE username = ?';
+  const sql = 'SELECT nome AS nome, email, telefone AS telefone FROM usuario WHERE username = ?';
   db.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Erro ao buscar perfil do usuário:', err);
@@ -56,7 +56,7 @@ app.get('/api/perfil', authenticateToken, (req, res) => {
     }
 
     const user = results[0];
-    res.json(user);
+    res.json(token);
   });
 });
 

@@ -25,8 +25,8 @@ const App = () => {
         ...pin,
         latitude: parseFloat(pin.latitude),
         longitude: parseFloat(pin.longitude),
-        endereco: "pin.endereco",
-        telefone: "pin.telefone"
+        endereco: pin.endereco,
+        telefone: pin.telefone
       }));
       setPins(formattedPins);
     } catch (error) {
@@ -104,8 +104,8 @@ const App = () => {
             <Callout>
               <View style={styles.calloutContainer} pointerEvents="box-none">
                 <Text style={styles.calloutTitle}>{pin.nome}</Text>
-                <Text style={styles.calloutAddress}>{pin.telefone}</Text>
-                <Text style={styles.calloutAddress}>{pin.endereco}</Text>
+                <Text style={styles.calloutAddress}>Telefone: {pin.telefone}</Text>
+                <Text style={styles.calloutAddress}>Endereço: {pin.endereco}</Text>
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={styles.button}
@@ -222,16 +222,18 @@ const styles = StyleSheet.create({
   calloutContainer: {
     width: 200,
     padding: 10,
+    backgroundColor: 'blue'
   },
   calloutTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: 'white'
   },
   calloutAddress: {
-    color: 'black', // Cor preta para o endereço
+    color: 'white', // Cor preta para o endereço
     fontSize: 14,
     marginVertical: 5,
-  },
+  },  
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

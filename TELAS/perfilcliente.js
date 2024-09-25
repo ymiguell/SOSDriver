@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, StyleSheet, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useUser } from '../UserContext'; // Ajuste o caminho conforme necessário
+import { useUser } from '../UserContext';
 
 export default function PerfilUser() {
-  const [user, setUser] = useState({ name: '', email: '', phone: '' });
-  const { token } = useUser(); // Assumindo que você está passando o token do contexto
+  const [user, setUser] = useState({ nome:'', email: '', telefone: '' });
+  const { token } = useUser();
 
   useEffect(() => {
-    fetchProfile();
+    if (token) {
+      fetchProfile();
+    }
   }, [token]);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch('http://localhost:3002/api/perfil', { // Para emuladores Android, use 10.0.2.2
+      const response = await fetch('http://10.0.2.2:3002/api/perfil', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -43,7 +45,7 @@ export default function PerfilUser() {
             style={styles.profileImage}
           />
           <View style={styles.containerStar}>
-            <Text style={styles.titleStyle}>{user.name}</Text>
+            <Text style={styles.titleStyle}>{user.nome}</Text>
             <View style={styles.starsContainer}>
               {[...Array(5)].map((_, index) => (
                 <Text key={index} style={styles.formatStars}>★</Text>
@@ -56,7 +58,7 @@ export default function PerfilUser() {
           <View style={styles.separateInputs}>
             <Text style={styles.label}>Telefone:</Text>
             <TextInput 
-              value={user.phone} 
+              value={user.telefone}  // Corrigido para 'phone'
               style={styles.inputText} 
               editable={false}
             />

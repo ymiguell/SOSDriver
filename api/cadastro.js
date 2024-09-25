@@ -29,10 +29,10 @@ app.post('/usuario', async (req, res) => {
   const { nome, dt_nasc, email, username, cpf, senha, confirmsenha, telefone, cep, numero, endereco, latitude, longitude, type } = req.body;
 
   // Verifica se todos os campos necessários estão presentes
-  if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha || !telefone || !cep || !numero || !type) {
-    console.log('Campos ausentes:', { nome, dt_nasc, email, username, cpf, senha, confirmsenha, telefone, cep, numero, endereco, latitude, longitude, type });
+  if (!nome || !dt_nasc || !email || !username || !cpf || !senha || !confirmsenha || !telefone || !cep || !numero || !type || !latitude || !longitude) {
     return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-  }
+}
+
 
   // Verifica se as senhas coincidem
   if (senha !== confirmsenha) {
@@ -44,7 +44,7 @@ app.post('/usuario', async (req, res) => {
     const hashedsenha = await bcrypt.hash(senha, 10);
 
     // Insere o novo usuário no banco de dados
-    const sql = `INSERT INTO usuario (nome, dt_nasc, email, username, cpf, senha, telefone, cep, numero, endereco, latitude, longitude, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO usuario (nome, dt_nasc, email, username, cpf, senha, telefone, cep, numero, endereco, latitude, longitude, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const values = [nome, dt_nasc, email, username, cpf, hashedsenha, telefone, cep, numero, endereco, latitude, longitude, type];
 
     db.query(sql, values, (err, results) => {
