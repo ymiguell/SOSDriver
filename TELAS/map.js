@@ -74,7 +74,7 @@ const App = () => {
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Ocorrencia')}>
             <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Histórico</Text>
           </TouchableOpacity>
