@@ -1,28 +1,43 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const OcorrenciaScreen = () => {
+  // Exemplo de dados
+  const ocorrencia = {
+    numero: 'xxxxxxx',
+    localizacao: 'Jardim Primavera, Mogi Mirim - SP, 02377-000',
+    descricao: 'Descrição detalhada da ocorrência.',
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.ocorrenciaText}>Número de ocorrência: xxxxxxx</Text>
-        <Text style={styles.enderecoText}>Jardim Primavera, Mogi Mirim - SP, 02377-000</Text>
-      </View>
-      <ScrollView style={styles.descricaoContainer}>
-        <Text style={styles.descricaoTitle}>Descrição:</Text>
+    <LinearGradient
+      colors={['#003B6F', '#005AA6', '#007BFF']}
+      style={styles.container}
+    >
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.header}>
+          <Text style={styles.ocorrenciaText}>Número de Ocorrência: {ocorrencia.numero}</Text>
+          <Text style={styles.enderecoText}>Localização: {ocorrencia.localizacao}</Text>
+        </View>
+        <View style={styles.descricaoContainer}>
+          <Text style={styles.descricaoTitle}>Descrição:</Text>
+          <Text style={styles.descricaoText}>{ocorrencia.descricao}</Text>
+        </View>
       </ScrollView>
       <View style={styles.footer}></View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   header: {
-    backgroundColor: '#003366',
     padding: 20,
   },
   ocorrenciaText: {
@@ -36,13 +51,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   descricaoContainer: {
-    flex: 1,
     padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Fundo branco semi-transparente
+    borderRadius: 10,
+    margin: 10,
   },
   descricaoTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#003B6F',
+  },
+  descricaoText: {
+    fontSize: 16,
+    color: '#000',
   },
   footer: {
     height: 50,

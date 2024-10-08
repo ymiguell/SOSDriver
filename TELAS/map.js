@@ -14,6 +14,8 @@ const App = () => {
   const [nomeUser, setNomeUser] = useState("");
   const navigation = useNavigation();
 
+  const [loading, setLoading] = useState(true); // Adicione isso
+
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -38,7 +40,7 @@ const App = () => {
 
   const handleFilterSelect = async (filter) => {
     try {
-      const response = await axios.get('http://172.16.11.2:3005/usuario', {
+      const response = await axios.get('http://192.168.56.1:3005/usuario', {
         params: { type: filter },
       });
       const formattedPins = response.data.map(pin => ({
@@ -84,9 +86,13 @@ const App = () => {
           </TouchableOpacity>
 
           <View style={styles.userSection}>
-            <Ionicons name="person-circle-outline" size={80} color="#fff" />
-            <Text style={styles.loginText}>{nomeUser}</Text>
-            <Text style={styles.registerText}>Cadastro</Text>
+             <Ionicons name="person-circle-outline" size={80} color="#fff" />
+             {loading ? ( // Adicione um estado de carregamento
+             <Text style={styles.loginText}>Carregando...</Text>
+               ) : (
+            <Text style={styles.loginText}>{nomeUser || "Usuário Desconhecido"}</Text>
+              )}
+            
           </View>
 
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilCliente')}>
@@ -116,35 +122,38 @@ const App = () => {
         }}
       >
         {pins.map(pin => (
-          <Marker
-            key={pin.id}
-            coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-            title={pin.nome}
-          >
-            <Callout>
-              <View style={styles.calloutContainer} pointerEvents="box-none">
-                <Text style={styles.calloutTitle}>{pin.nome}</Text>
-                <Text style={styles.calloutAddress}>Telefone: {pin.telefone}</Text>
-                <Text style={styles.calloutAddress}>Endereço: {pin.endereco}</Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleCall(pin.telefone)}
-                  >
-                    <Ionicons name="call" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Ligar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleMessage(pin.telefone)}
-                  >
-                    <Ionicons name="chatbubble" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>SMS</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Callout>
-          </Marker>
+         <Marker
+         key={pin.id}
+         coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+         title={pin.nome}
+       >
+         <Callout>
+           <LinearGradient
+             colors={['#003B6F', '#005AA6', '#007BFF']} // As mesmas cores do BottomSheet
+             style={styles.calloutContainer}
+           >
+             <Text style={styles.calloutTitle}>{pin.nome}</Text>
+             <Text style={styles.calloutAddress}>Telefone: {pin.telefone}</Text>
+             <Text style={styles.calloutAddress}>Endereço: {pin.endereco}</Text>
+             <View style={styles.buttonContainer}>
+               <TouchableOpacity
+                 style={styles.button}
+                 onPress={() => handleCall(pin.telefone)}
+               >
+                 <Ionicons name="call" size={20} color="#fff" />
+                 <Text style={styles.buttonText}>Ligar</Text>
+               </TouchableOpacity>
+               <TouchableOpacity
+                 style={styles.button}
+                 onPress={() => handleMessage(pin.telefone)}
+               >
+                 <Ionicons name="chatbubble" size={20} color="#fff" />
+                 <Text style={styles.buttonText}>SMS</Text>
+               </TouchableOpacity>
+             </View>
+           </LinearGradient>
+         </Callout>
+       </Marker>
         ))}
       </MapView>
     </View>
@@ -242,7 +251,8 @@ const styles = StyleSheet.create({
   calloutContainer: {
     width: 200,
     padding: 10,
-    backgroundColor: 'blue'
+    borderRadius: 10, // Adicionando borda arredondada
+    
   },
   calloutTitle: {
     fontSize: 16,
@@ -250,13 +260,14 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   calloutAddress: {
-    color: 'white', // Cor preta para o endereço
+    color: 'white', // Cor para o endereço
     fontSize: 14,
     marginVertical: 5,
   },  
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    
   },
   button: {
     flexDirection: 'row',

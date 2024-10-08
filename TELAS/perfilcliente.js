@@ -21,7 +21,7 @@ export default function PerfilUser() {
           return;
         }
 
-        const response = await fetch('http://172.16.11.2:3002/api/perfil', { 
+        const response = await fetch('http://192.168.56.1:3002/api/perfil', { 
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -60,10 +60,6 @@ export default function PerfilUser() {
         ) : (
           <View style={styles.containerInfo}>
             <View style={styles.containerUser}>
-              <Image
-                source={{ uri: 'https://via.placeholder.com/100' }}
-                style={styles.profileImage}
-              />
               <View style={styles.containerStar}>
                 <Text style={styles.titleStyle}>{user.nome}</Text>
                 <View style={styles.starsContainer}>
@@ -116,7 +112,7 @@ const styles = StyleSheet.create({
   containerInfo: {
     backgroundColor: "#FFF",
     borderRadius: 20,
-    padding: 20,
+    padding: 50,
     width: '80%',
     elevation: 5,
   },
