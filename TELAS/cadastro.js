@@ -72,7 +72,7 @@ export default function App() {
   
     setLoading(true);
     try {
-      const response = await fetch('http://172.16.11.20:3000/usuario', {
+      const response = await fetch('http://172.16.11.2:3000/usuario', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -40,9 +40,9 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Rota para obter perfil do usuário
-app.get('/api/perfil', authenticateToken, (req, res) => {
-  const username = req.user.username; // Extrai o nome de usuário do token decodificado
-
+app.post('/api/perfil', (req, res) => {
+  //const username = req.user.username; // Extrai o nome de usuário do token decodificado
+  const { username, password } = req.body;
   // Encontra o usuário no banco de dados
   const sql = 'SELECT nome AS nome, email, telefone AS telefone FROM usuario WHERE username = ?';
   db.query(sql, [username], (err, results) => {
@@ -56,7 +56,7 @@ app.get('/api/perfil', authenticateToken, (req, res) => {
     }
 
     const user = results[0];
-    res.json(token);
+    res.json(user);
   });
 });
 

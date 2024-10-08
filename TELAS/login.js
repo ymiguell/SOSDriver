@@ -29,7 +29,7 @@ const Login = () => {
         setLoading(true);
     
         try {
-            const response = await fetch('http://172.16.11.20:3001/api/login', { 
+            const response = await fetch('http://172.16.11.2:3001/api/login', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,6 +45,9 @@ const Login = () => {
             if (response.ok) {
                 // Armazenar o token ou credenciais
                 await AsyncStorage.setItem('authToken', result.token);
+                await AsyncStorage.setItem('username', username);
+                await AsyncStorage.setItem('password', password);
+                await AsyncStorage.setItem('nomeusuario', result.nome);
     
                 // Navegar para a próxima página
                 navigation.navigate('Map');

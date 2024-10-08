@@ -6,11 +6,31 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BottomSheet } from '@/components/PopUp';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
   const [pins, setPins] = useState([]);
+  const [nomeUser, setNomeUser] = useState("");
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      try {
+        const username = await AsyncStorage.getItem('nomeusuario');
+        setNomeUser(username)
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar o perfil.');
+        console.error('Erro ao buscar perfil:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    
+    fetchProfile();
+  }, []);
 
   const toggleAside = () => {
     setAsideVisible(!asideVisible);
@@ -18,7 +38,7 @@ const App = () => {
 
   const handleFilterSelect = async (filter) => {
     try {
-      const response = await axios.get('http://172.16.11.20:3005/usuario', {
+      const response = await axios.get('http://172.16.11.2:3005/usuario', {
         params: { type: filter },
       });
       const formattedPins = response.data.map(pin => ({
@@ -65,7 +85,7 @@ const App = () => {
 
           <View style={styles.userSection}>
             <Ionicons name="person-circle-outline" size={80} color="#fff" />
-            <Text style={styles.loginText}>Fazer Login</Text>
+            <Text style={styles.loginText}>{nomeUser}</Text>
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
 

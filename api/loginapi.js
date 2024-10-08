@@ -58,7 +58,10 @@ app.post('/api/login', (req, res) => {
             // Gera um token
             const token = jwt.sign({ username: usuario.username }, 'seu_segredo_jwt', { expiresIn: '1h' });
 
-            res.json({ token });
+            res.json({ 
+                token,
+                nome: usuario.nome
+            });
         });
     });
 });

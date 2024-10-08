@@ -13,25 +13,18 @@ export default function PerfilUser() {
       try {
         // Recupera o token armazenado
         const token = await AsyncStorage.getItem('authToken');
-        const username = await AsyncStorage.getItem('username');
-        const password = await AsyncStorage.getItem('password');
 
         if (!token) {
           Alert.alert('Erro', 'Você não está logado.');
           return;
         }
 
-        const response = await fetch('http://172.16.11.2:3002/api/perfil', { 
-          method: 'POST',
+        const response = await fetch('http://172.16.11.2:3002/api/perfil', {
           headers: {
-              'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify({
-              username,
-              senha: password,  // Enviar 'senha' ao invés de 'password'
-          }),
-      });
-        
+        });
+
         if (!response.ok) {
           throw new Error('Falha ao carregar perfil');
         }
@@ -110,7 +103,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontSize: 24,
-    color: '#000',
+    color: '#fff',
     fontWeight: 'bold',
   },
   containerInfo: {
@@ -161,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formatStars: {
-    color: '#ffb300',
+    color: '#FFFF00',
     fontSize: 24,
     marginHorizontal: 2,
   },
