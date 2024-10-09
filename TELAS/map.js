@@ -78,7 +78,7 @@ const App = () => {
           colors={['#003B6F', '#005AA6', '#007BFF']}
           style={styles.aside}
         >
-          <TouchableOpacity style={styles.closeButton} onPress={toggleAside}>
+          <TouchableOpacity style={styles.closeButtonMenu} onPress={toggleAside}>
             <Ionicons name="close" size={30} color="#fff" />
           </TouchableOpacity>
 
@@ -202,11 +202,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  closeButtonMenu: {
+    backgroundColor: 'transparent', // Fundo transparente
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 100, // Ajuste conforme necessário
+  },
   closeButton: {
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   userSection: {
     alignItems: 'center',
