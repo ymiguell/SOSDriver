@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity, Dimensions, Alert, Text, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BottomSheet } from '@/components/PopUp';
 import axios from 'axios';
@@ -11,17 +11,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
   const [pins, setPins] = useState([]);
+  const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
   const navigation = useNavigation();
-
-  const [loading, setLoading] = useState(true); // Adicione isso
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
         const username = await AsyncStorage.getItem('nomeusuario');
-        setNomeUser(username)
+        setNomeUser(username);
       } catch (error) {
         Alert.alert('Erro', 'Não foi possível carregar o perfil.');
         console.error('Erro ao buscar perfil:', error);
@@ -30,7 +30,6 @@ const App = () => {
       }
     };
 
-    
     fetchProfile();
   }, []);
 
@@ -47,8 +46,6 @@ const App = () => {
         ...pin,
         latitude: parseFloat(pin.latitude),
         longitude: parseFloat(pin.longitude),
-        endereco: pin.endereco,
-        telefone: pin.telefone
       }));
       setPins(formattedPins);
     } catch (error) {
@@ -58,7 +55,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    handleFilterSelect(null); // Carrega todos os pinos inicialmente
+    handleFilterSelect(null);
   }, []);
 
   const handleCall = (telefone) => {
@@ -86,13 +83,12 @@ const App = () => {
           </TouchableOpacity>
 
           <View style={styles.userSection}>
-             <Ionicons name="person-circle-outline" size={80} color="#fff" />
-             {loading ? ( // Adicione um estado de carregamento
-             <Text style={styles.loginText}>Carregando...</Text>
-               ) : (
-            <Text style={styles.loginText}>{nomeUser || "Usuário Desconhecido"}</Text>
-              )}
-            
+            <Ionicons name="person-circle-outline" size={80} color="#fff" />
+            {loading ? (
+              <Text style={styles.loginText}>Carregando...</Text>
+            ) : (
+              <Text style={styles.loginText}>{nomeUser || "Usuário Desconhecido"}</Text>
+            )}
           </View>
 
           <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilCliente')}>
@@ -122,40 +118,52 @@ const App = () => {
         }}
       >
         {pins.map(pin => (
-         <Marker
-         key={pin.id}
-         coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-         title={pin.nome}
-       >
-         <Callout>
-           <LinearGradient
-             colors={['#003B6F', '#005AA6', '#007BFF']} // As mesmas cores do BottomSheet
-             style={styles.calloutContainer}
-           >
-             <Text style={styles.calloutTitle}>{pin.nome}</Text>
-             <Text style={styles.calloutAddress}>Telefone: {pin.telefone}</Text>
-             <Text style={styles.calloutAddress}>Endereço: {pin.endereco}</Text>
-             <View style={styles.buttonContainer}>
-               <TouchableOpacity
-                 style={styles.button}
-                 onPress={() => handleCall(pin.telefone)}
-               >
-                 <Ionicons name="call" size={20} color="#fff" />
-                 <Text style={styles.buttonText}>Ligar</Text>
-               </TouchableOpacity>
-               <TouchableOpacity
-                 style={styles.button}
-                 onPress={() => handleMessage(pin.telefone)}
-               >
-                 <Ionicons name="chatbubble" size={20} color="#fff" />
-                 <Text style={styles.buttonText}>SMS</Text>
-               </TouchableOpacity>
-             </View>
-           </LinearGradient>
-         </Callout>
-       </Marker>
+          <Marker
+            key={pin.id}
+            coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+            title={pin.nome}
+            onPress={() => setSelectedPin(pin)} // Armazenar o pin selecionado
+          />
         ))}
       </MapView>
+
+      {selectedPin && (
+        <View style={styles.calloutContainer}>
+          <LinearGradient
+            colors={['#003B6F', '#005AA6', '#007BFF']}
+            style={styles.calloutContent}
+          >
+            <Text style={styles.calloutTitle}>{selectedPin.nome}</Text>
+            <Text style={styles.calloutAddress}>Telefone: {selectedPin.telefone}</Text>
+            <Text style={styles.calloutAddress}>Endereço: {selectedPin.endereco}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => handleCall(selectedPin.telefone)}
+              >
+                <Ionicons name="call" size={20} color="#fff" />
+                <Text style={styles.buttonText}>Ligar</Text>
+              </TouchableOpacity>
+
+              {/* Botão de Fechar com estilo vermelho */}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setSelectedPin(null)} // Para fechar o callout
+              >
+                <Text style={styles.closeText}>Fechar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => handleMessage(selectedPin.telefone)}
+              >
+                <Ionicons name="chatbubble" size={20} color="#fff" />
+                <Text style={styles.buttonText}>SMS</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </View>
+      )}
     </View>
   );
 };
@@ -195,12 +203,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   closeButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 4,
-    backgroundColor: 'transparent',
     padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   userSection: {
     alignItems: 'center',
@@ -211,11 +217,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     marginTop: 10,
-  },
-  registerText: {
-    color: '#fff',
-    fontSize: 14,
-    marginTop: 5,
   },
   option: {
     flexDirection: 'row',
@@ -249,25 +250,32 @@ const styles = StyleSheet.create({
     right: 0,
   },
   calloutContainer: {
-    width: 200,
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
     padding: 10,
-    borderRadius: 10, // Adicionando borda arredondada
-    
+    borderRadius: 10,
+    elevation: 5,
+    zIndex: 5,
+  },
+  calloutContent: {
+    padding: 10,
+    borderRadius: 10,
   },
   calloutTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
   },
   calloutAddress: {
-    color: 'white', // Cor para o endereço
+    color: 'white',
     fontSize: 14,
     marginVertical: 5,
-  },  
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    
   },
   button: {
     flexDirection: 'row',
@@ -282,6 +290,19 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     marginLeft: 5,
+  },
+  closeButton: {
+    backgroundColor: 'red', // Cor vermelha para o botão fechar
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5, // Ajusta a margem para os botões
+    width: 90,
+  },
+  closeText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
