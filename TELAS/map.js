@@ -13,6 +13,8 @@ const App = () => {
   const [pins, setPins] = useState([]);
   const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
+  const [serviceRequestVisible, setServiceRequestVisible] = useState(false);
+  const [requestDetails, setRequestDetails] = useState({});
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +65,24 @@ const App = () => {
   };
 
   const handleMessage = (telefone) => {
-    Linking.openURL(`sms:${telefone}`);
+    if (selectedPin) {
+      setRequestDetails({
+        nome: selectedPin.nome,
+        endereco: selectedPin.endereco,
+        telefone: selectedPin.telefone,
+      });
+      setServiceRequestVisible(true);
+    }
+  };
+
+  const acceptService = () => {
+    Alert.alert('Serviço Aceito', `Você aceitou o serviço de ${requestDetails.nome}.`);
+    setServiceRequestVisible(false);
+  };
+
+  const rejectService = () => {
+    Alert.alert('Serviço Recusado', `Você recusou o serviço de ${requestDetails.nome}.`);
+    setServiceRequestVisible(false);
   };
 
   return (
@@ -145,7 +164,6 @@ const App = () => {
                 <Text style={styles.buttonText}>Ligar</Text>
               </TouchableOpacity>
 
-              {/* Botão de Fechar com estilo vermelho */}
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setSelectedPin(null)} // Para fechar o callout
@@ -158,10 +176,27 @@ const App = () => {
                 onPress={() => handleMessage(selectedPin.telefone)}
               >
                 <Ionicons name="chatbubble" size={20} color="#fff" />
-                <Text style={styles.buttonText}>SMS</Text>
+                <Text style={styles.buttonText}>Solicitar Serviço</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
+        </View>
+      )}
+
+      {serviceRequestVisible && (
+        <View style={styles.requestContainer}>
+          <Text style={styles.requestTitle}>Solicitação de Serviço</Text>
+          <Text style={styles.requestText}>Nome: {requestDetails.nome}</Text>
+          <Text style={styles.requestText}>Endereço: {requestDetails.endereco}</Text>
+          <Text style={styles.requestText}>Telefone: {requestDetails.telefone}</Text>
+          <View style={styles.requestButtonContainer}>
+            <TouchableOpacity style={styles.requestButton} onPress={acceptService}>
+              <Text style={styles.requestButtonText}>Aceitar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.requestButton} onPress={rejectService}>
+              <Text style={styles.requestButtonText}>Recusar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
@@ -203,19 +238,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   closeButtonMenu: {
-    backgroundColor: 'transparent', // Fundo transparente
+    backgroundColor: 'transparent',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100, // Ajuste conforme necessário
+    width: 100,
   },
   closeButton: {
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   userSection: {
     alignItems: 'center',
@@ -293,23 +327,49 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginRight: 5,
-    width: 90,
+    width: 120,
     justifyContent: 'center',
   },
   buttonText: {
     color: '#fff',
     marginLeft: 5,
   },
-  closeButton: {
-    backgroundColor: 'red', // Cor vermelha para o botão fechar
+  closeText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  requestContainer: {
+    position: 'absolute',
+    bottom: 50,
+    left: 20,
+    right: 20,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    elevation: 5,
+  },
+  requestTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  requestText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  requestButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  requestButton: {
+    flex: 1,
+    backgroundColor: '#005AA6',
     padding: 10,
     borderRadius: 5,
+    margin: 5,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 5, // Ajusta a margem para os botões
-    width: 90,
   },
-  closeText: {
+  requestButtonText: {
     color: '#fff',
     fontSize: 16,
   },

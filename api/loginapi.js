@@ -9,18 +9,18 @@ const PORT = 3001;
 
 // Configuração do banco de dados
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'tcc'
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'tcc'
 });
 
 db.connect((err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    process.exit(1);
-  }
-  console.log('Conectado ao banco de dados.');
+    if (err) {
+        console.error('Erro ao conectar ao banco de dados:', err);
+        process.exit(1);
+    }
+    console.log('Conectado ao banco de dados.');
 });
 
 // Middleware
@@ -48,6 +48,7 @@ app.post('/api/login', (req, res) => {
         }
 
         const usuario = results[0];
+        console.log("Usuário:", usuario); // Verifique aqui
 
         // Verifica a senha
         bcrypt.compare(senha, usuario.senha, (err, resultado) => {
@@ -58,9 +59,11 @@ app.post('/api/login', (req, res) => {
             // Gera um token
             const token = jwt.sign({ username: usuario.username }, 'seu_segredo_jwt', { expiresIn: '1h' });
 
+            // Inclui o tipo de usuário na resposta
             res.json({ 
                 token,
-                nome: usuario.nome
+                nome: usuario.nome,
+                tipo: usuario.type // Aqui deve ser usuario.type
             });
         });
     });

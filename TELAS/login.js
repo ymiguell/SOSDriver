@@ -36,21 +36,24 @@ const Login = () => {
                 },
                 body: JSON.stringify({
                     username,
-                    senha: password,  // Enviar 'senha' ao invés de 'password'
+                    senha: password,
                 }),
             });
     
             const result = await response.json();
+            console.log('Resultado da API:', result); // Verifique a estrutura
     
             if (response.ok) {
-                // Armazenar o token ou credenciais
                 await AsyncStorage.setItem('authToken', result.token);
-                await AsyncStorage.setItem('username', username);
-                await AsyncStorage.setItem('password', password);
-                await AsyncStorage.setItem('nomeusuario', result.nome);
+                const userType = result.type || result.user?.type; // Ajuste conforme a estrutura
     
-                // Navegar para a próxima página
-                navigation.navigate('Map');
+                console.log('Login bem-sucedido, tipo de usuário:', userType);
+    
+                if (['mecanico', 'borracheiro', 'eletricista'].includes(userType)) {
+                    navigation.navigate('MapPrestador');
+                } else {
+                    navigation.navigate('Map');
+                }
             } else {
                 alert(result.message || 'Erro ao realizar o login.');
             }
