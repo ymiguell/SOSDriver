@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { BottomSheet } from '@/components/PopUp';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
@@ -72,17 +72,8 @@ const App = () => {
         telefone: selectedPin.telefone,
       });
       setServiceRequestVisible(true);
+      navigation.navigate('mapPrestador', { requestDetails }); // Navega para a tela de prestador
     }
-  };
-
-  const acceptService = () => {
-    Alert.alert('Serviço Aceito', `Você aceitou o serviço de ${requestDetails.nome}.`);
-    setServiceRequestVisible(false);
-  };
-
-  const rejectService = () => {
-    Alert.alert('Serviço Recusado', `Você recusou o serviço de ${requestDetails.nome}.`);
-    setServiceRequestVisible(false);
   };
 
   return (
@@ -180,23 +171,6 @@ const App = () => {
               </TouchableOpacity>
             </View>
           </LinearGradient>
-        </View>
-      )}
-
-      {serviceRequestVisible && (
-        <View style={styles.requestContainer}>
-          <Text style={styles.requestTitle}>Solicitação de Serviço</Text>
-          <Text style={styles.requestText}>Nome: {requestDetails.nome}</Text>
-          <Text style={styles.requestText}>Endereço: {requestDetails.endereco}</Text>
-          <Text style={styles.requestText}>Telefone: {requestDetails.telefone}</Text>
-          <View style={styles.requestButtonContainer}>
-            <TouchableOpacity style={styles.requestButton} onPress={acceptService}>
-              <Text style={styles.requestButtonText}>Aceitar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.requestButton} onPress={rejectService}>
-              <Text style={styles.requestButtonText}>Recusar</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       )}
     </View>
@@ -335,41 +309,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   closeText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  requestContainer: {
-    position: 'absolute',
-    bottom: 50,
-    left: 20,
-    right: 20,
-    padding: 15,
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    elevation: 5,
-  },
-  requestTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  requestText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  requestButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  requestButton: {
-    flex: 1,
-    backgroundColor: '#005AA6',
-    padding: 10,
-    borderRadius: 5,
-    margin: 5,
-    alignItems: 'center',
-  },
-  requestButtonText: {
     color: '#fff',
     fontSize: 16,
   },

@@ -41,16 +41,16 @@ const Login = () => {
             });
     
             const result = await response.json();
-            console.log('Resultado da API:', result); // Verifique a estrutura
+            console.log('Resultado da API:', result); // Verifique a estrutura da resposta
     
             if (response.ok) {
                 await AsyncStorage.setItem('authToken', result.token);
-                const userType = result.type || result.user?.type; // Ajuste conforme a estrutura
+                const userType = result.tipo || result.type;// Certifique-se de que 'type' é a chave correta
     
-                console.log('Login bem-sucedido, tipo de usuário:', userType);
+                console.log('Tipo de usuário:', userType); // Verifique o tipo de usuário
     
                 if (['mecanico', 'borracheiro', 'eletricista'].includes(userType)) {
-                    navigation.navigate('MapPrestador');
+                    navigation.navigate('mapPrestador');
                 } else {
                     navigation.navigate('Map');
                 }

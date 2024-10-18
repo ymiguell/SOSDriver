@@ -1,55 +1,122 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Importar LinearGradient
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import MapView, { Marker } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const App = () => {
-  const router = useRouter(); // Obtém a instância do roteador
+  const [asideVisible, setAsideVisible] = useState(false);
+  const [requestDetails, setRequestDetails] = useState(null);
+  const [users, setUsers] = useState([]);
+  const router = useRouter();
+
+  const toggleAside = () => {
+    setAsideVisible(!asideVisible);
+  };
+
+  const handleMarkerPress = (user) => {
+    // Configura os detalhes da solicitação ao pressionar o marcador
+    setRequestDetails(user);
+  };
+
+  const acceptService = () => {
+    Alert.alert('Serviço Aceito', `Você aceitou o serviço de ${requestDetails.nome}.`);
+    setRequestDetails(null); // Oculta a solicitação após aceitação
+  };
+
+  const rejectService = () => {
+    Alert.alert('Serviço Recusado', `Você recusou o serviço de ${requestDetails.nome}.`);
+    setRequestDetails(null); // Oculta a solicitação após rejeição
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://172.16.11.18:3005/usuario'); // Substitua pela URL do seu endpoint
+      const data = await response.json();
+      setUsers(data.filter(user => user.tipo === 'cliente')); // Filtra os usuários do tipo 'cliente'
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(); // Chama a função para buscar usuários ao montar o componente
+  }, []);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.menuButton} onPress={() => {/* ação para o menu */}}>
+      <TouchableOpacity style={styles.menuButton} onPress={toggleAside}>
         <Ionicons name="menu" size={30} color="#fff" />
       </TouchableOpacity>
 
-      <LinearGradient
-        colors={['#003B6F', '#005AA6', '#007BFF']}
-        style={styles.aside}
-      >
-        <View style={styles.userSection}>
-          <Ionicons name="person-circle-outline" size={80} color="#fff" />
-          <Text style={styles.registerText}>Cadastro</Text>
-        </View>
+      {asideVisible && (
+        <LinearGradient colors={['#003B6F', '#005AA6', '#007BFF']} style={styles.aside}>
+          <TouchableOpacity style={styles.closeButton} onPress={toggleAside}>
+            <Ionicons name="close" size={30} color="#fff" />
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
-          <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
-          <Text style={styles.optionText}>Perfil</Text>
-        </TouchableOpacity>
+          <View style={styles.userSection}>
+            <Ionicons name="person-circle-outline" size={80} color="#fff" />
+            <Text style={styles.loginText}>Fazer Login</Text>
+            <Text style={styles.registerText}>Cadastro</Text>
+          </View>
 
-        <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
-          <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
-          <Text style={styles.optionText}>Histórico</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
+            <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
+            <Text style={styles.optionText}>Perfil</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option} onPress={() => alert('Convide amigos')}>
-          <Ionicons name="people-outline" size={24} color="#fff" style={styles.optionIcon} />
-          <Text style={styles.optionText}>Convide amigos</Text>
-        </TouchableOpacity>
-      </LinearGradient>
+          <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
+            <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
+            <Text style={styles.optionText}>Histórico</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.option} onPress={() => alert('Convide amigos')}>
+            <Ionicons name="people-outline" size={24} color="#fff" style={styles.optionIcon} />
+            <Text style={styles.optionText}>Convide amigos</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+      )}
 
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: -23.55052,
-          longitude: -46.633309,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitude: -22.4333,
+          longitude: -46.9575,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
         }}
       >
-        <Marker coordinate={{ latitude: -23.55052, longitude: -46.633309 }} />
+        {users.map(user => (
+          <Marker 
+            key={user.id}
+            coordinate={{ latitude: user.latitude, longitude: user.longitude }}
+            onPress={() => handleMarkerPress(user)}
+          >
+            <Ionicons name="person" size={30} color="blue" />
+          </Marker>
+        ))}
       </MapView>
+
+      {requestDetails && (
+        <View style={styles.requestContainer}>
+          <LinearGradient colors={['#003B6F', '#005AA6', '#007BFF']} style={styles.requestContent}>
+            <Text style={styles.requestTitle}>Solicitação de Serviço</Text>
+            <Text style={styles.requestLabel}>Nome: <Text style={styles.requestValue}>{requestDetails.nome}</Text></Text>
+            <Text style={styles.requestLabel}>Endereço: <Text style={styles.requestValue}>{requestDetails.endereco}</Text></Text>
+            <Text style={styles.requestLabel}>Telefone: <Text style={styles.requestValue}>{requestDetails.telefone}</Text></Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={acceptService}>
+                <Text style={styles.buttonText}>Aceitar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={rejectService}>
+                <Text style={styles.buttonText}>Recusar</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </View>
+      )}
     </View>
   );
 };
@@ -87,6 +154,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 4,
+    backgroundColor: 'transparent',
+    padding: 10,
   },
   userSection: {
     alignItems: 'center',
@@ -133,6 +208,49 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  requestContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    padding: 15,
+    borderRadius: 10,
+    elevation: 5,
+    zIndex: 5,
+  },
+  requestContent: {
+    padding: 10,
+    borderRadius: 10,
+  },
+  requestTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  requestLabel: {
+    color: 'white',
+    marginVertical: 2,
+  },
+  requestValue: {
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    backgroundColor: '#005AA6',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
