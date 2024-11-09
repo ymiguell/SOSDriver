@@ -13,10 +13,9 @@ const App = () => {
   const [pins, setPins] = useState([]);
   const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
-  const [serviceRequestVisible, setServiceRequestVisible] = useState(false);
-  const [requestDetails, setRequestDetails] = useState({});
-  const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -64,15 +63,25 @@ const App = () => {
     Linking.openURL(`tel:${telefone}`);
   };
 
-  const handleMessage = (telefone) => {
+  const handleMessage = async () => {
     if (selectedPin) {
-      setRequestDetails({
-        nome: selectedPin.nome,
-        endereco: selectedPin.endereco,
-        telefone: selectedPin.telefone,
-      });
-      setServiceRequestVisible(true);
-      navigation.navigate('mapPrestador', { requestDetails }); // Navega para a tela de prestador
+      try {
+        // Enviar a solicitação para a API
+        const response = await axios.post('http://192.168.56.1:3003/solicitacao', {
+          nome: selectedPin.nome,
+          endereco: selectedPin.endereco,
+          telefone: selectedPin.telefone,
+        });
+
+        if (response.status === 200) {
+          Alert.alert('Sucesso', 'Solicitação de serviço enviada com sucesso!');
+        } else {
+          Alert.alert('Erro', 'Falha ao enviar a solicitação. Tente novamente.');
+        }
+      } catch (error) {
+        console.error('Erro ao enviar solicitação:', error);
+        Alert.alert('Erro', 'Erro ao enviar solicitação. Verifique sua conexão e tente novamente.');
+      }
     }
   };
 
@@ -164,7 +173,7 @@ const App = () => {
 
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => handleMessage(selectedPin.telefone)}
+                onPress={handleMessage} // Enviar solicitação de serviço
               >
                 <Ionicons name="chatbubble" size={20} color="#fff" />
                 <Text style={styles.buttonText}>Solicitar Serviço</Text>

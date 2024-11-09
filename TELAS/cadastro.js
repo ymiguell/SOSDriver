@@ -29,12 +29,25 @@ export default function App() {
 
   const handleCepChange = async (cepValue) => {
     setCep(cepValue);
-    if (cepValue.length === 8) { // Check if CEP is complete
+    if (cepValue.length === 8) { // Verifica se o CEP está completo
       try {
-        // Fetch address data from ViaCEP
+        // Busca dados do ViaCEP
         const response = await fetch(`https://viacep.com.br/ws/${cepValue}/json/`);
-        const data = await response.json();
-        
+        const responseText = await response.text(); // Obtemos a resposta como texto
+
+        console.log('Resposta da API ViaCEP:', responseText); // Verifique o conteúdo da resposta
+
+        // Tenta parsear como JSON
+        let data;
+        try {
+          data = JSON.parse(responseText); // Tenta analisar como JSON
+        } catch (error) {
+          console.error('Erro ao analisar JSON da API ViaCEP:', error);
+          alert('Erro ao processar os dados do CEP.');
+          return;
+        }
+
+        // Se o CEP for inválido, a API retorna um campo 'erro' como true
         if (data.erro) {
           alert('CEP não encontrado.');
           return;
@@ -42,10 +55,33 @@ export default function App() {
 
         setEndereco(data.logradouro + ', ' + data.bairro + ', ' + data.localidade + ' - ' + data.uf);
 
-        // Fetch coordinates from OpenStreetMap
-        const geocodeResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${data.logradouro}, ${data.localidade}, ${data.uf}`);
-        const geocodeData = await geocodeResponse.json();
-        
+        // Adicionando User-Agent na requisição para OpenStreetMap
+        const geocodeResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${data.logradouro}, ${data.localidade}, ${data.uf}`, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'MinhaAplicacao/1.0 (cauefelipe844@gmail.com)' // Defina um User-Agent único para sua aplicação
+          }
+        });
+
+        const geocodeResponseText = await geocodeResponse.text(); // Obtemos a resposta do OpenStreetMap como texto
+
+        console.log('Resposta da API OpenStreetMap:', geocodeResponseText); // Verifique o conteúdo da resposta
+
+        // Verifica se a resposta começa com '<' (indicando que é uma página HTML)
+        if (geocodeResponseText.startsWith('<')) {
+          alert('Erro ao buscar coordenadas. A resposta da API do OpenStreetMap não é válida.');
+          return;
+        }
+
+        let geocodeData;
+        try {
+          geocodeData = JSON.parse(geocodeResponseText); // Tenta analisar a resposta como JSON
+        } catch (error) {
+          console.error('Erro ao analisar JSON do OpenStreetMap:', error);
+          alert('Erro ao processar as coordenadas.');
+          return;
+        }
+
         if (geocodeData.length > 0) {
           setLatitude(geocodeData[0].lat);
           setLongitude(geocodeData[0].lon);
@@ -64,15 +100,15 @@ export default function App() {
       alert('Todos os campos são obrigatórios, incluindo latitude e longitude.');
       return;
     }
-  
+
     if (senha !== confirmsenha) {
       alert('As senhas não coincidem.');
       return;
     }
-  
+
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.56.1:3000/usuario', {
+      const response = await fetch('http://172.16.11.18:3000/usuario', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,10 +130,10 @@ export default function App() {
           type,
         }),
       });
-  
+
       const responseText = await response.text(); // Usar text para capturar resposta
       let result;
-  
+
       try {
         result = JSON.parse(responseText); // Tentar analisar JSON
       } catch (e) {
@@ -105,10 +141,9 @@ export default function App() {
         alert('Resposta inesperada do servidor.');
         return;
       }
-  
+
       if (response.ok) {
         alert('Cadastro realizado com sucesso.');
-        // Aqui você pode adicionar a lógica para adicionar marcadores ao mapa, se necessário.
         // Resetar estados após o sucesso
         setNome('');
         setDtNasc('');
@@ -134,7 +169,6 @@ export default function App() {
       setLoading(false);
     }
   };
-  
 
   const handleLogin = () => {
     navigation.navigate('Login');
@@ -214,7 +248,6 @@ export default function App() {
             placeholder="Endereço"
             editable={false} // Prevent manual editing
           />
-          {/* Latitude and Longitude fields removed */}
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={type}
