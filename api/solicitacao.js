@@ -87,35 +87,41 @@ app.put('/solicitacao/:id', (req, res) => {
 
 // Endpoint para obter pinos do tipo 'cliente'
 app.get('/usuario/cliente', (req, res) => {
-    const type = req.query.type;
-     `
-      SELECT id, nome, endereco, telefone, type, latitude, longitude
-      FROM usuario 
-      WHERE type = 'cliente'
-    `;
+  const tipo = req.query.tipo; // Obtém o valor do tipo (cliente, etc.)
+
+  if (!tipo || !['mecanico', 'borracheiro', 'eletricista', 'cliente'].includes(tipo)) {
+    return res.status(400).send('Tipo inválido');
+  }
+
+  const query = `
+    SELECT id, nome, endereco, telefone, type, latitude, longitude
+    FROM usuario
+    WHERE type = ?
+  `;
   
-    db.query(query, (err, results) => {
-      if (err) {
-        console.error('Erro ao buscar pinos de clientes:', err);
-        return res.status(500).send('Erro ao buscar pinos de clientes');
-      }
-  
-      // Formata os dados para garantir que latitude e longitude sejam retornadas como números
-      const formattedResults = results.map(user => ({
-        id: user.id,
-        nome: user.nome,
-        endereco: user.endereco,
-        telefone: user.telefone,
-        type: user.type,
-        latitude: parseFloat(user.latitude),
-        longitude: parseFloat(user.longitude),
-      }));
-  
-      res.status(200).json(formattedResults);
-    });
+  db.query(query, [tipo], (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar pinos de clientes:', err);
+      return res.status(500).send('Erro ao buscar pinos de clientes');
+    }
+
+    const formattedResults = results.map(user => ({
+      id: user.id,
+      nome: user.nome,
+      endereco: user.endereco,
+      telefone: user.telefone,
+      type: user.type,
+      latitude: parseFloat(user.latitude),
+      longitude: parseFloat(user.longitude),
+    }));
+
+    res.status(200).json(formattedResults);
   });
+});
 
 // Iniciar o servidor
 app.listen(port, () => {
+  const expressListRoutes = require('express-list-routes');
+expressListRoutes(app);
   console.log(`Servidor rodando na porta ${port}`);
 });

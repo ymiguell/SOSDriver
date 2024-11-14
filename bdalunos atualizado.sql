@@ -31,3 +31,8 @@ CREATE TABLE service_requests (
 
 select * from service_requests;
 select * from usuario;
+
+ALTER TABLE service_requests ADD COLUMN latitude DECIMAL(9, 6);
+ALTER TABLE service_requests ADD COLUMN longitude DECIMAL(9, 6);
+TRUNCATE TABLE service_requests;
+ALTER TABLE service_requests AUTO_INCREMENT = 1;

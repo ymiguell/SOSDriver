@@ -25,9 +25,11 @@ const App = () => {
 
   // Função para aceitar a solicitação de serviço
   const acceptService = async () => {
+    console.log(`Tentando aceitar o serviço com ID: ${requestDetails.id}`);
+    
     try {
       const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
-        status: 'aceito', // Atualizando apenas o status
+        status: 'aceito',
       });
   
       if (response.status === 200) {
@@ -36,8 +38,8 @@ const App = () => {
         Alert.alert('Erro', 'Erro ao aceitar a solicitação. Tente novamente.');
       }
     } catch (error) {
-      console.error('Erro ao aceitar a solicitação:', error);
-      Alert.alert('Erro', 'Erro ao aceitar a solicitação. Tente novamente.');
+      console.error('Erro ao aceitar a solicitação:', error.response ? error.response.data : error.message);
+      Alert.alert('Erro', error.response ? error.response.data.message : 'Erro ao aceitar a solicitação. Tente novamente.');
     }
   
     setRequestDetails(null); // Oculta a solicitação após aceitação
@@ -76,8 +78,8 @@ const App = () => {
       }));
       setPins(formattedPins); // Atualiza o estado com os pinos filtrados
     } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-      Alert.alert('Erro', 'Erro ao buscar usuários. Tente novamente.');
+      console.error('Erro ao buscar usuários:', error.response ? error.response.data : error.message);
+      Alert.alert('Erro', error.response ? error.response.data.message : 'Erro ao buscar usuários. Tente novamente.');
     }
   };
 

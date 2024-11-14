@@ -14,6 +14,7 @@ const App = () => {
   const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
   const [loading, setLoading] = useState(true);
+  const [solicitacaoStatus, setSolicitacaoStatus] = useState(null); // Novo estado para o status da solicitação
 
   const navigation = useNavigation();
 
@@ -74,6 +75,7 @@ const App = () => {
         });
 
         if (response.status === 200) {
+          setSolicitacaoStatus('Aguardando Resposta'); // Definir status como aguardando resposta
           Alert.alert('Sucesso', 'Solicitação de serviço enviada com sucesso!');
         } else {
           Alert.alert('Erro', 'Falha ao enviar a solicitação. Tente novamente.');
@@ -83,6 +85,11 @@ const App = () => {
         Alert.alert('Erro', 'Erro ao enviar solicitação. Verifique sua conexão e tente novamente.');
       }
     }
+  };
+
+  // Função para atualizar o status da solicitação
+  const atualizarStatus = (status) => {
+    setSolicitacaoStatus(status);
   };
 
   return (
@@ -155,6 +162,10 @@ const App = () => {
             <Text style={styles.calloutTitle}>{selectedPin.nome}</Text>
             <Text style={styles.calloutAddress}>Telefone: {selectedPin.telefone}</Text>
             <Text style={styles.calloutAddress}>Endereço: {selectedPin.endereco}</Text>
+            <Text style={styles.calloutStatus}>
+              {solicitacaoStatus ? solicitacaoStatus : "Aguardando Solicitação"}
+            </Text>
+
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.button}
@@ -298,6 +309,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     marginVertical: 5,
+  },
+  calloutStatus: {
+    color: 'white',
+    fontSize: 14,
+    marginVertical: 5,
+    fontWeight: 'bold',
   },
   buttonContainer: {
     flexDirection: 'row',
