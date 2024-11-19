@@ -65,6 +65,8 @@ app.post('/api/login', (req, res) => {
             res.json({ 
                 token,
                 nome: usuario.nome,
+                username: usuario.username,
+                password: usuario.senha,
                 tipo: usuario.type // Aqui deve ser usuario.type
             });
         });

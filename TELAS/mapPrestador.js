@@ -112,24 +112,7 @@ const App = () => {
             <Text style={styles.loginText}>Fazer Login</Text>
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
-
-          {/* Opções de filtro */}
-          <View style={styles.filterSection}>
-            <Text style={styles.filterText}>Filtro</Text>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleFilterSelect('cliente')}
-            >
-              <Text style={styles.optionText}>Clientes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={() => handleFilterSelect('prestador')}
-            >
-              <Text style={styles.optionText}>Prestadores</Text>
-            </TouchableOpacity>
-          </View>
-
+          
           {/* Outras opções no menu lateral */}
           <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />

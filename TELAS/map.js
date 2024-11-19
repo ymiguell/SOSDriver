@@ -72,6 +72,9 @@ const App = () => {
           nome: selectedPin.nome,
           endereco: selectedPin.endereco,
           telefone: selectedPin.telefone,
+          latitude: selectedPin.latitude,
+          longitude: selectedPin.longitude,
+          id_prestador: selectedPin.id,
         });
 
         if (response.status === 200) {

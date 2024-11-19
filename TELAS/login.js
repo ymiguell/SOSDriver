@@ -45,6 +45,9 @@ const Login = () => {
     
             if (response.ok) {
                 await AsyncStorage.setItem('authToken', result.token);
+                await AsyncStorage.setItem('nomeusuario', result.nome);
+                await AsyncStorage.setItem('username', result.username);
+                await AsyncStorage.setItem('password', result.password);
                 const userType = result.tipo || result.type;// Certifique-se de que 'type' é a chave correta
     
                 console.log('Tipo de usuário:', userType); // Verifique o tipo de usuário

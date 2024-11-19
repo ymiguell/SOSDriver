@@ -27,10 +27,10 @@ app.use(bodyParser.json());
 
 // Endpoint para salvar a solicitação
 app.post('/solicitacao', (req, res) => {
-  const { nome, endereco, telefone } = req.body;
-  const query = 'INSERT INTO service_requests (nome, endereco, telefone) VALUES (?, ?, ?)';
+  const { nome, endereco, telefone, latitude, longitude, id_prestador } = req.body;
+  const query = 'INSERT INTO service_requests (nome, endereco, telefone, latitude, longitude, id_prestador) VALUES (?, ?, ?, ?, ?, ?)';
 
-  db.query(query, [nome, endereco, telefone], (err, result) => {
+  db.query(query, [nome, endereco, telefone, latitude, longitude, id_prestador], (err, result) => {
     if (err) {
       console.error('Erro ao salvar solicitação:', err);
       return res.status(500).send('Erro ao salvar solicitação');
