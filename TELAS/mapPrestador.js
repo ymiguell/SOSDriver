@@ -5,12 +5,15 @@ import MapView, { Marker } from 'react-native-maps';
 import { useRouter } from 'expo-router';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importando AsyncStorage
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
   const [requestDetails, setRequestDetails] = useState(null);
   const [pins, setPins] = useState([]);
-  const [filterType, setFilterType] = useState('cliente');  // Estado para armazenar o filtro
+  const [filterType, setFilterType] = useState('cliente');
+  const [nomeUser, setNomeUser] = useState(''); // Estado para armazenar o nome do usuário
+  const [loading, setLoading] = useState(false); // Estado de carregamento
   const router = useRouter();
 
   // Função para alternar o menu lateral
@@ -26,12 +29,12 @@ const App = () => {
   // Função para aceitar a solicitação de serviço
   const acceptService = async () => {
     console.log(`Tentando aceitar o serviço com ID: ${requestDetails.id}`);
-    
+
     try {
       const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
         status: 'aceito',
       });
-  
+
       if (response.status === 200) {
         Alert.alert('Serviço Aceito', `Você aceitou o serviço de ${requestDetails.nome}.`);
       } else {
@@ -41,16 +44,17 @@ const App = () => {
       console.error('Erro ao aceitar a solicitação:', error.response ? error.response.data : error.message);
       Alert.alert('Erro', error.response ? error.response.data.message : 'Erro ao aceitar a solicitação. Tente novamente.');
     }
-  
+
     setRequestDetails(null); // Oculta a solicitação após aceitação
   };
-  
+
+  // Função para recusar a solicitação de serviço
   const rejectService = async () => {
     try {
       const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
         status: 'recusado', // Atualizando o status para 'recusado'
       });
-  
+
       if (response.status === 200) {
         Alert.alert('Serviço Recusado', `Você recusou o serviço de ${requestDetails.nome}.`);
       } else {
@@ -60,8 +64,13 @@ const App = () => {
       console.error('Erro ao recusar a solicitação:', error);
       Alert.alert('Erro', 'Erro ao recusar a solicitação. Tente novamente.');
     }
-  
+
     setRequestDetails(null); // Oculta a solicitação após rejeição
+  };
+
+  // Função para fechar a solicitação
+  const closeRequest = () => {
+    setRequestDetails(null); // Fecha a solicitação ao setar como null
   };
 
   // Função para buscar usuários filtrados
@@ -86,12 +95,32 @@ const App = () => {
   // Efeito para buscar usuários assim que o componente for montado ou o filtro mudar
   useEffect(() => {
     fetchUsers(filterType);
-  }, [filterType]);  // Quando o filtro mudar, refaz a requisição
+  }, [filterType]);
 
   // Função para alterar o tipo de filtro
   const handleFilterSelect = (filter) => {
     setFilterType(filter); // Atualiza o tipo de filtro
   };
+
+  // Efeito para buscar o nome do usuário do AsyncStorage
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true); // Inicia o carregamento
+      try {
+        const username = await AsyncStorage.getItem('nomeusuario');
+        if (username) {
+          setNomeUser(username); // Atualiza o nome do usuário
+        }
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar o perfil.');
+        console.error('Erro ao buscar perfil:', error);
+      } finally {
+        setLoading(false); // Finaliza o carregamento
+      }
+    };
+
+    fetchProfile(); // Chama a função para buscar o nome do usuário
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -109,17 +138,21 @@ const App = () => {
 
           <View style={styles.userSection}>
             <Ionicons name="person-circle-outline" size={80} color="#fff" />
-            <Text style={styles.loginText}>Fazer Login</Text>
+            {loading ? (
+              <Text style={styles.loginText}>Carregando...</Text>
+            ) : (
+              <Text style={styles.loginText}>{nomeUser ? `Ola, ${nomeUser}` : 'Nome não encontrado'}</Text>
+            )}
             <Text style={styles.registerText}>Cadastro</Text>
           </View>
-          
+
           {/* Outras opções no menu lateral */}
-          <TouchableOpacity style={styles.option} onPress={() => router.push('/perfilUSer')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilCliente')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => alert('Histórico de chamadas')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Ocorrencia')}>
             <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Histórico</Text>
           </TouchableOpacity>
@@ -163,12 +196,16 @@ const App = () => {
             <Text style={styles.requestLabel}>Telefone: <Text style={styles.requestValue}>{requestDetails.telefone}</Text></Text>
 
             <View style={styles.buttonContainer}>
-              {/* Botões para aceitar ou recusar o serviço */}
+              {/* Botões para aceitar, recusar ou fechar o serviço */}
               <TouchableOpacity style={styles.button} onPress={acceptService}>
                 <Text style={styles.buttonText}>Aceitar</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={rejectService}>
                 <Text style={styles.buttonText}>Recusar</Text>
+              </TouchableOpacity>
+              {/* Novo botão para fechar o container */}
+              <TouchableOpacity style={styles.button} onPress={closeRequest}>
+                <Text style={styles.buttonText}>Fechar</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -216,101 +253,81 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 20,
     right: 20,
-    zIndex: 4,
-    backgroundColor: 'transparent',
-    padding: 10,
   },
   userSection: {
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 80,
+    marginBottom: 30,
   },
   loginText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,
     marginTop: 10,
   },
   registerText: {
     color: '#fff',
-    fontSize: 14,
-    marginTop: 5,
-  },
-  filterSection: {
-    marginTop: 20,
-  },
-  filterText: {
-    color: '#fff',
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 16,
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#005AA6',
     paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
   },
   optionIcon: {
-    marginRight: 10,
+    marginRight: 15,
   },
   optionText: {
-    fontSize: 18,
     color: '#fff',
+    fontSize: 18,
   },
   map: {
     flex: 1,
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+    width: '100%',
   },
   requestContainer: {
     position: 'absolute',
     bottom: 20,
-    left: 20,
-    right: 20,
-    padding: 15,
+    left: 10,
+    right: 10,
+    zIndex: 4,
     borderRadius: 10,
     elevation: 5,
-    zIndex: 5,
   },
   requestContent: {
-    padding: 10,
+    padding: 20,
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   requestTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#fff',
+    marginBottom: 10,
   },
   requestLabel: {
-    color: 'white',
-    marginVertical: 2,
+    color: '#fff',
+    fontSize: 16,
+    marginBottom: 5,
   },
   requestValue: {
-    fontWeight: 'bold',
+    color: '#ddd',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
   },
   button: {
-    flex: 1,
     backgroundColor: '#005AA6',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    flex: 1,
     marginHorizontal: 5,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
