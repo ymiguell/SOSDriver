@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import MapView, { Marker } from 'react-native-maps';
-import { useRouter } from 'expo-router';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Importando AsyncStorage
+import { useNavigation } from '@react-navigation/native';
 
 const App = () => {
   const [asideVisible, setAsideVisible] = useState(false);
@@ -14,7 +14,7 @@ const App = () => {
   const [filterType, setFilterType] = useState('cliente');
   const [nomeUser, setNomeUser] = useState(''); // Estado para armazenar o nome do usuário
   const [loading, setLoading] = useState(false); // Estado de carregamento
-  const router = useRouter();
+  const navigation = useNavigation();
 
   // Função para alternar o menu lateral
   const toggleAside = () => {
@@ -143,11 +143,10 @@ const App = () => {
             ) : (
               <Text style={styles.loginText}>{nomeUser ? `Ola, ${nomeUser}` : 'Nome não encontrado'}</Text>
             )}
-            <Text style={styles.registerText}>Cadastro</Text>
           </View>
 
           {/* Outras opções no menu lateral */}
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('PerfilCliente')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('perfilprestador')}>
             <Ionicons name="person-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>

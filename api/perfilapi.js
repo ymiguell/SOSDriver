@@ -44,7 +44,7 @@ app.post('/api/perfil', (req, res) => {
   //const username = req.user.username; // Extrai o nome de usuário do token decodificado
   const { username, password } = req.body;
   // Encontra o usuário no banco de dados
-  const sql = 'SELECT nome AS nome, email, telefone AS telefone FROM usuario WHERE username = ?';
+  const sql = 'SELECT nome AS nome, email, telefone, endereco, latitude, longitude AS telefone FROM usuario WHERE username = ?';
   db.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Erro ao buscar perfil do usuário:', err);
