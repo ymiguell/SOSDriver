@@ -9,34 +9,32 @@ export default function PerfilUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Fetching profile...');
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        // Recupera o token e o username armazenado
         const token = await AsyncStorage.getItem('authToken');
         const username = await AsyncStorage.getItem('username');
         const password = await AsyncStorage.getItem('password');
-
+        console.log('Token:', token, 'Username:', username);
+  
         if (!token) {
           Alert.alert('Erro', 'Você não está logado.');
           return;
         }
-
+  
         const response = await fetch('http://192.168.56.1:3002/api/perfil', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            username,
-            senha: password,  // Enviar 'senha' ao invés de 'password'
-          }),
+          body: JSON.stringify({ username, senha: password }),
         });
-
+  
         if (!response.ok) {
           throw new Error('Falha ao carregar perfil');
         }
-
+  
         const data = await response.json();
         setUser(data);
       } catch (error) {
@@ -46,7 +44,7 @@ export default function PerfilUser() {
         setLoading(false);
       }
     };
-
+  
     fetchProfile();
   }, []);
 
@@ -67,7 +65,7 @@ export default function PerfilUser() {
               </View>
               <Text style={styles.profileName}>{user.nome}</Text>
               <Text style={styles.profileTelefone}>Número de Contato: {user.telefone}</Text>
-              <Text style={styles.address}>{user.endereco || 'Endereço não disponível'}</Text>
+              <Text style={styles.address}> {user.endereco}</Text>
             </View>
 
             {/* Informações do Usuário */}
@@ -82,26 +80,25 @@ export default function PerfilUser() {
               </View>
             </View>
 
-            {/* Mapa */}
             <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                initialRegion={{
-                  latitude: user.latitude || -23.53288, // Usando valores default se não houver latitude
-                  longitude: user.longitude || -46.57421,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                {user.latitude && user.longitude && (
-                  <Marker
-                    coordinate={{ latitude: user.latitude, longitude: user.longitude }}
-                    title="Localização"
-                    description={user.endereco}
-                  />
-                )}
-              </MapView>
-            </View>
+  <MapView
+    style={styles.map}
+    initialRegion={{
+      latitude: user.latitude || -22.4333, // Usando valores default se não houver latitude
+      longitude: user.longitude || -46.9575,
+      latitudeDelta: 0.05, // Ajuste a quantidade de zoom desejada
+      longitudeDelta: 0.05, // Ajuste a quantidade de zoom desejada
+    }}
+  >
+    {user.latitude && user.longitude && (
+      <Marker
+        coordinate={{ latitude: user.latitude, longitude: user.longitude }}
+        title="Localização"
+        description={user.endereco}
+      />
+    )}
+  </MapView>
+</View>
 
             {/* Últimos Atendimentos */}
             <View style={styles.historySection}>
@@ -138,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    width: 400
+    width: 400,
   },
   profileSection: {
     alignItems: 'center',
@@ -193,9 +190,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   mapContainer: {
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 20,
+    
+       borderRadius: 10,
+        overflow: 'hidden',
+         marginBottom: 20
+         
   },
   map: {
     width: '100%',

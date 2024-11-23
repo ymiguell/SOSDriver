@@ -14,7 +14,8 @@ const App = () => {
   const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
   const [loading, setLoading] = useState(true);
-  const [solicitacaoStatus, setSolicitacaoStatus] = useState(null); // Novo estado para o status da solicitação
+  const [solicitacaoStatus, setSolicitacaoStatus] = useState(''); // Novo estado para o status da solicitação
+  
 
   const navigation = useNavigation();
 
@@ -92,9 +93,13 @@ const App = () => {
 
   // Função para atualizar o status da solicitação
   const atualizarStatus = (status) => {
-    setSolicitacaoStatus(status);
-  };
-
+    // Verificar se o status é 'aceito' ou 'recusado'
+    if (status === 'aceito' || status === 'recusado') {
+      setSolicitacaoStatus(status);  // Atualiza o estado com o valor adequado
+    } else {
+      console.error('Status inválido. O status deve ser "aceito" ou "recusado".');
+    }
+  }
   return (
     <View style={styles.container}>
       <BottomSheet onFilterSelect={handleFilterSelect} />

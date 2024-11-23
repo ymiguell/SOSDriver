@@ -26,46 +26,37 @@ const App = () => {
     setRequestDetails(user);
   };
 
-  // Função para aceitar a solicitação de serviço
-  const acceptService = async () => {
-    console.log(`Tentando aceitar o serviço com ID: ${requestDetails.id}`);
+  // Função para atualizar o status da solicitação
+  const atualizarStatus = async (status) => {
+    if (!requestDetails) return; // Verificar se a solicitação existe
 
     try {
       const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
-        status: 'aceito',
+        status: status, // Atualizando o status para 'aceito' ou 'recusado'
       });
 
       if (response.status === 200) {
-        Alert.alert('Serviço Aceito', `Você aceitou o serviço de ${requestDetails.nome}.`);
+        const statusMessage = status === 'aceito' ? 'aceitou' : 'recusou';
+        Alert.alert('Solicitação Atualizada', `Você ${statusMessage} o serviço de ${requestDetails.nome}.`);
       } else {
-        Alert.alert('Erro', 'Erro ao aceitar a solicitação. Tente novamente.');
+        Alert.alert('Erro', `Erro ao atualizar a solicitação para ${status}. Tente novamente.`);
       }
     } catch (error) {
-      console.error('Erro ao aceitar a solicitação:', error.response ? error.response.data : error.message);
-      Alert.alert('Erro', error.response ? error.response.data.message : 'Erro ao aceitar a solicitação. Tente novamente.');
+      console.error('Erro ao atualizar a solicitação:', error);
+      Alert.alert('Erro', 'Erro ao atualizar a solicitação. Tente novamente.');
     }
 
-    setRequestDetails(null); // Oculta a solicitação após aceitação
+    setRequestDetails(null); // Oculta a solicitação após aceitar ou recusar
+  };
+
+  // Função para aceitar a solicitação de serviço
+  const acceptService = () => {
+    atualizarStatus('aceito'); // Chama a função de atualização com status 'aceito'
   };
 
   // Função para recusar a solicitação de serviço
-  const rejectService = async () => {
-    try {
-      const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
-        status: 'recusado', // Atualizando o status para 'recusado'
-      });
-
-      if (response.status === 200) {
-        Alert.alert('Serviço Recusado', `Você recusou o serviço de ${requestDetails.nome}.`);
-      } else {
-        Alert.alert('Erro', 'Erro ao recusar a solicitação. Tente novamente.');
-      }
-    } catch (error) {
-      console.error('Erro ao recusar a solicitação:', error);
-      Alert.alert('Erro', 'Erro ao recusar a solicitação. Tente novamente.');
-    }
-
-    setRequestDetails(null); // Oculta a solicitação após rejeição
+  const rejectService = () => {
+    atualizarStatus('recusado'); // Chama a função de atualização com status 'recusado'
   };
 
   // Função para fechar a solicitação
@@ -141,7 +132,7 @@ const App = () => {
             {loading ? (
               <Text style={styles.loginText}>Carregando...</Text>
             ) : (
-              <Text style={styles.loginText}>{nomeUser ? `Ola, ${nomeUser}` : 'Nome não encontrado'}</Text>
+              <Text style={styles.loginText}>{nomeUser ? `Olá, ${nomeUser}` : 'Nome não encontrado'}</Text>
             )}
           </View>
 

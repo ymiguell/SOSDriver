@@ -55,7 +55,7 @@ app.get('/solicitacoes', (req, res) => {
 app.put('/solicitacao/:id', (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-  
+    console.log (id , status);
     const validStatuses = ['aceito', 'recusado'];
   
     if (!validStatuses.includes(status)) {
