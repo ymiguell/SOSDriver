@@ -8,7 +8,8 @@ import MapScreen from './TELAS/map'; // Adicionando o caminho do MapScreen
 import PerfilCliente from './TELAS/perfilcliente'; // Caminho para o componente PerfilCliente
 import OcorrenciaScreen from './TELAS/ocorrencia';
 import mapPrestador from './TELAS/mapPrestador';
-import perfilprestador from './TELAS/perfilprestador'
+import perfilprestador from './TELAS/perfilprestador';
+import ocorrenciaprestador from './TELAS/ocorrenciaPrestador';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Ocorrencia" component={OcorrenciaScreen} />
         <Stack.Screen name="mapPrestador" component={mapPrestador} />
         <Stack.Screen name="perfilprestador" component={perfilprestador} />
+        <Stack.Screen name="ocorrenciaprestador" component={ocorrenciaprestador} />
 
       </Stack.Navigator>
     </NavigationContainer>

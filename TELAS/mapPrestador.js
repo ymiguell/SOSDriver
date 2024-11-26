@@ -26,28 +26,29 @@ const App = () => {
     setRequestDetails(user);
   };
 
-  // Função para atualizar o status da solicitação
-  const atualizarStatus = async (status) => {
-    if (!requestDetails) return; // Verificar se a solicitação existe
+ // Função para atualizar o status da solicitação
+const atualizarStatus = async (status) => {
+  if (!requestDetails) return; // Verificar se a solicitação existe
 
-    try {
-      const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
-        status: status, // Atualizando o status para 'aceito' ou 'recusado'
-      });
+  try {
+    const response = await axios.put(`http://172.16.11.18:3003/solicitacao/${requestDetails.id}`, {
+      status: status, // Atualizando o status para 'aceito' ou 'recusado'
+    });
 
-      if (response.status === 200) {
-        const statusMessage = status === 'aceito' ? 'aceitou' : 'recusou';
-        Alert.alert('Solicitação Atualizada', `Você ${statusMessage} o serviço de ${requestDetails.nome}.`);
-      } else {
-        Alert.alert('Erro', `Erro ao atualizar a solicitação para ${status}. Tente novamente.`);
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar a solicitação:', error);
-      Alert.alert('Erro', 'Erro ao atualizar a solicitação. Tente novamente.');
+    if (response.status === 200) {
+      const statusMessage = status === 'aceito' ? 'aceitou' : 'recusou';
+      Alert.alert('Solicitação Atualizada', `Você ${statusMessage} o serviço de ${requestDetails.nome}.`);
+    } else {
+      Alert.alert('Erro', `Erro ao atualizar a solicitação para ${status}. Tente novamente.`);
     }
+  } catch (error) {
+    console.error('Erro ao atualizar a solicitação:', error);
+    Alert.alert('Erro', 'Erro ao atualizar a solicitação. Tente novamente.');
+  }
 
-    setRequestDetails(null); // Oculta a solicitação após aceitar ou recusar
-  };
+  setRequestDetails(null); // Oculta a solicitação após aceitar ou recusar
+};
+
 
   // Função para aceitar a solicitação de serviço
   const acceptService = () => {
@@ -142,7 +143,7 @@ const App = () => {
             <Text style={styles.optionText}>Perfil</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('Ocorrencia')}>
+          <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ocorrenciaprestador')}>
             <Ionicons name="call-outline" size={24} color="#fff" style={styles.optionIcon} />
             <Text style={styles.optionText}>Histórico</Text>
           </TouchableOpacity>

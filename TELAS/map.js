@@ -14,11 +14,10 @@ const App = () => {
   const [selectedPin, setSelectedPin] = useState(null);
   const [nomeUser, setNomeUser] = useState("");
   const [loading, setLoading] = useState(true);
-  const [solicitacaoStatus, setSolicitacaoStatus] = useState(''); // Novo estado para o status da solicitação
   
-
   const navigation = useNavigation();
 
+  // Função para buscar perfil
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -36,10 +35,7 @@ const App = () => {
     fetchProfile();
   }, []);
 
-  const toggleAside = () => {
-    setAsideVisible(!asideVisible);
-  };
-
+  // Função para buscar pinos
   const handleFilterSelect = async (filter) => {
     try {
       const response = await axios.get('http://192.168.56.1:3005/usuario', {
@@ -68,7 +64,6 @@ const App = () => {
   const handleMessage = async () => {
     if (selectedPin) {
       try {
-        // Enviar a solicitação para a API
         const response = await axios.post('http://192.168.56.1:3003/solicitacao', {
           nome: selectedPin.nome,
           endereco: selectedPin.endereco,
@@ -79,7 +74,6 @@ const App = () => {
         });
 
         if (response.status === 200) {
-          setSolicitacaoStatus('Aguardando Resposta'); // Definir status como aguardando resposta
           Alert.alert('Sucesso', 'Solicitação de serviço enviada com sucesso!');
         } else {
           Alert.alert('Erro', 'Falha ao enviar a solicitação. Tente novamente.');
@@ -91,15 +85,11 @@ const App = () => {
     }
   };
 
-  // Função para atualizar o status da solicitação
-  const atualizarStatus = (status) => {
-    // Verificar se o status é 'aceito' ou 'recusado'
-    if (status === 'aceito' || status === 'recusado') {
-      setSolicitacaoStatus(status);  // Atualiza o estado com o valor adequado
-    } else {
-      console.error('Status inválido. O status deve ser "aceito" ou "recusado".');
-    }
-  }
+  // Função para alternar a visibilidade do menu lateral
+  const toggleAside = () => {
+    setAsideVisible(!asideVisible);
+  };
+
   return (
     <View style={styles.container}>
       <BottomSheet onFilterSelect={handleFilterSelect} />
@@ -156,7 +146,7 @@ const App = () => {
             key={pin.id}
             coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
             title={pin.nome}
-            onPress={() => setSelectedPin(pin)} // Armazenar o pin selecionado
+            onPress={() => setSelectedPin(pin)}
           />
         ))}
       </MapView>
@@ -170,9 +160,6 @@ const App = () => {
             <Text style={styles.calloutTitle}>{selectedPin.nome}</Text>
             <Text style={styles.calloutAddress}>Telefone: {selectedPin.telefone}</Text>
             <Text style={styles.calloutAddress}>Endereço: {selectedPin.endereco}</Text>
-            <Text style={styles.calloutStatus}>
-              {solicitacaoStatus ? solicitacaoStatus : "Aguardando Solicitação"}
-            </Text>
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
@@ -184,18 +171,28 @@ const App = () => {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setSelectedPin(null)} // Para fechar o callout
+                style={styles.button}
+                onPress={() => setSelectedPin(null)}
               >
-                <Text style={styles.closeText}>Fechar</Text>
+                <Text style={styles.buttonText}>Fechar</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.button}
-                onPress={handleMessage} // Enviar solicitação de serviço
+                onPress={handleMessage}
               >
                 <Ionicons name="chatbubble" size={20} color="#fff" />
-                <Text style={styles.buttonText}>Solicitar Serviço</Text>
+                <Text style={styles.buttonText}>Solicitar</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.whatsappContainer}>
+              <TouchableOpacity
+                style={styles.buttonWhatsapp}
+                onPress={() => Linking.openURL(`https://wa.me/55${selectedPin.telefone}`)}
+              >
+                <Ionicons name="logo-whatsapp" size={20} color="#fff" />
+                <Text style={styles.buttonText}>WhatsApp</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -246,12 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 100,
-  },
-  closeButton: {
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   userSection: {
     alignItems: 'center',
@@ -318,29 +309,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 5,
   },
-  calloutStatus: {
-    color: 'white',
-    fontSize: 14,
-    marginVertical: 5,
-    fontWeight: 'bold',
-  },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
+    marginBottom: 10,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#005AA6',
-    padding: 10,
+    padding: 8,
     borderRadius: 5,
-    marginRight: 5,
-    width: 120,
+    width: 90,
     justifyContent: 'center',
+  },
+  buttonWhatsapp: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#25D366',
+    padding: 12,
+    borderRadius: 5,
+    width: 250,
+    justifyContent: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
     marginLeft: 5,
+  },
+  whatsappContainer: {
+    marginTop: 1,
+    alignItems: 'center',
   },
   closeText: {
     color: '#fff',
